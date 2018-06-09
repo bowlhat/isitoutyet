@@ -1,0 +1,533 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "is it out yet",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "LatestVersion",
+          "slots": [
+            {
+              "name": "projectslot",
+              "type": "PROJECT",
+              "samples": [
+                "tell me about {projectslot}",
+                "{projectslot} please",
+                "I meant {projectslot}",
+                "I wanted {projectslot}",
+                "I want information about {projectslot}",
+                "I want {projectslot}",
+                "{projectslot}"
+              ]
+            }
+          ],
+          "samples": [
+            "{projectslot} latest version",
+            "{projectslot} current version",
+            "the current version of {projectslot}",
+            "the latest version of {projectslot}",
+            "{projectslot} current release",
+            "{projectslot} latest release",
+            "the latest release of {projectslot}",
+            "the current release of {projectslot}",
+            "can you tell me the current release of {projectslot}",
+            "can you tell me the latest {projectslot} version",
+            "can you tell me what the current version of {projectslot} is",
+            "what is the current release of {projectslot}",
+            "what is the current version of {projectslot}",
+            "what is the current {projectslot} release",
+            "what is the current {projectslot} version",
+            "what is the latest release of {projectslot}",
+            "what is the latest version of {projectslot}",
+            "what is the latest {projectslot} version"
+          ]
+        },
+        {
+          "name": "WhenWasItReleased",
+          "slots": [
+            {
+              "name": "projectslot",
+              "type": "PROJECT",
+              "samples": [
+                "I want information about {projectslot} version {versionslot}",
+                "I want information about {projectslot} {versionslot}",
+                "I want information about {projectslot}",
+                "I want {projectslot} version {versionslot}",
+                "I want {projectslot} {versionslot}",
+                "I want {projectslot}",
+                "Tell me about {projectslot} {versionslot}",
+                "Tell me about {projectslot} version {versionslot}",
+                "Tell me about {projectslot}",
+                "{projectslot} version {versionslot} ",
+                "{projectslot} {versionslot}",
+                "{projectslot}",
+                "{projectslot} please",
+                "{projectslot} {versionslot} please",
+                "{projectslot} version {versionslot} please",
+                "I meant {projectslot}",
+                "I meant {projectslot} {versionslot}",
+                "I meant {projectslot} version {versionslot}",
+                "I wanted {projectslot}",
+                "I wanted {projectslot} {versionslot}",
+                "I wanted {projectslot} version {versionslot}"
+              ]
+            },
+            {
+              "name": "versionslot",
+              "type": "VERSION",
+              "samples": [
+                "I want {projectslot} version {versionslot}",
+                "I want {versionslot}",
+                "I want {projectslot} {versionslot}",
+                "I want information about {projectslot} version {versionslot}",
+                "I want information about {projectslot} {versionslot}",
+                "I want information about {versionslot}",
+                "Tell me about {projectslot} version {versionslot}",
+                "Tell me about {projectslot} {versionslot}",
+                "Tell me about {versionslot}",
+                "{projectslot} version {versionslot}",
+                "version {versionslot}",
+                "version {versionslot} please",
+                "{projectslot} {versionslot}",
+                "{projectslot} {versionslot} please",
+                "{versionslot}",
+                "{versionslot} please",
+                "{projectslot} version {versionslot} please",
+                "I meant {versionslot}",
+                "I meant {projectslot} {versionslot}",
+                "I meant {projectslot} version {versionslot}",
+                "I wanted {versionslot}",
+                "I wanted {projectslot} {versionslot}",
+                "I wanted {projectslot} version {versionslot}"
+              ]
+            }
+          ],
+          "samples": [
+            "the release date",
+            "can you tell me when it be released",
+            "can you tell me when it came out",
+            "can you tell me when it come out",
+            "can you tell me when it was released",
+            "what be the release date",
+            "what date be it",
+            "what date be it released",
+            "what date did it come out",
+            "what date do it come out",
+            "what date was it released",
+            "what date was it",
+            "what is the release date",
+            "what was the release date",
+            "when",
+            "when be it",
+            "when be it released",
+            "when did it come out",
+            "when do it come out",
+            "when was it released",
+            "when was it",
+            "the release date of {projectslot}",
+            "the release date of {versionslot}",
+            "the release date of {projectslot} {versionslot}",
+            "the release date of {projectslot} version {versionslot}",
+            "when did {projectslot} come out",
+            "when did {versionslot} come out",
+            "when did {projectslot} {versionslot} come out",
+            "when did {projectslot} version {versionslot} come out",
+            "what date did {projectslot} come out",
+            "what date did {versionslot} come out",
+            "what date did {projectslot} {versionslot} come out",
+            "what date did {projectslot} version {versionslot} come out",
+            "can you tell me when {projectslot} was released",
+            "can you tell me when {versionslot} was released",
+            "can you tell me when {projectslot} {versionslot} was released",
+            "can you tell me when {projectslot} version {versionslot} was released",
+            "can you tell me when {projectslot} came out",
+            "can you tell me when {versionslot} came out",
+            "can you tell me when {projectslot} {versionslot} came out",
+            "can you tell me when {projectslot} version {versionslot} came out",
+            "tell me when {projectslot} came out",
+            "tell me when {versionslot} came out",
+            "tell me when {projectslot} {versionslot} came out",
+            "tell me when {projectslot} version {versionslot} came out",
+            "tell me when {projectslot} was released",
+            "tell me when {versionslot} was released",
+            "tell me when {projectslot} {versionslot} was released",
+            "tell me when {projectslot} version {versionslot} was released",
+            "tell me about releases of {projectslot}",
+            "tell me about releases for {projectslot}",
+            "tell me about {projectslot}",
+            "tell me about {versionslot}",
+            "tell me about {projectslot} {versionslot}",
+            "tell me about {projectslot} version {versionslot}",
+            "when was {versionslot} released",
+            "when was {projectslot} released",
+            "when was {projectslot} {versionslot} released",
+            "when was {projectslot} version {versionslot} released",
+            "tell me about {projectslot}",
+            "tell me about {versionslot}",
+            "tell me about {projectslot} {versionslot}",
+            "tell me about {projectslot} version {versionslot}",
+            "when was the release of {projectslot}",
+            "when was the release of {versionslot}",
+            "when was the release of {projectslot} {versionslot}",
+            "when was the release of {projectslot} version {versionslot}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "PROJECT",
+          "values": [
+            {
+              "name": {
+                "value": "ubuntu"
+              }
+            }
+          ]
+        },
+        {
+          "name": "VERSION",
+          "values": [
+            {
+              "name": {
+                "value": "18.04",
+                "synonyms": ["Bionic Beaver", "Bionic"]
+              }
+            },
+            {
+              "name": {
+                "value": "17.10",
+                "synonyms": ["Artful Aardvark", "Artful"]
+              }
+            },
+            {
+              "name": {
+                "value": "17.04",
+                "synonyms": ["Zesty Zapus", "Zesty"]
+              }
+            },
+            {
+              "name": {
+                "value": "16.10",
+                "synonyms": ["Yakkety Yak", "Yakkety"]
+              }
+            },
+            {
+              "name": {
+                "value": "16.04",
+                "synonyms": ["Xenial Xerus", "Xenial"]
+              }
+            },
+            {
+              "name": {
+                "value": "15.10",
+                "synonyms": ["Wily Werewolf", "Wily"]
+              }
+            },
+            {
+              "name": {
+                "value": "15.04",
+                "synonyms": ["Vivid Vervet", "Vivid"]
+              }
+            },
+            {
+              "name": {
+                "value": "14.10",
+                "synonyms": ["Utopic Unicorn", "Utopic"]
+              }
+            },
+            {
+              "name": {
+                "value": "14.04",
+                "synonyms": ["Trusty Tahr", "Trusty"]
+              }
+            },
+            {
+              "name": {
+                "value": "13.10",
+                "synonyms": ["Saucy Salamander", "Saucy"]
+              }
+            },
+            {
+              "name": {
+                "value": "13.04",
+                "synonyms": ["Raring Ringtail", "Raring"]
+              }
+            },
+            {
+              "name": {
+                "value": "12.10",
+                "synonyms": ["Quantal Quetzal", "Quantal"]
+              }
+            },
+            {
+              "name": {
+                "value": "12.04",
+                "synonyms": ["Precise Pangolin", "Precise"]
+              }
+            },
+            {
+              "name": {
+                "value": "11.10",
+                "synonyms": ["Oneiric Ocelot", "Oneiric"]
+              }
+            },
+            {
+              "name": {
+                "value": "11.04",
+                "synonyms": ["Natty Narwhal", "Natty"]
+              }
+            },
+            {
+              "name": {
+                "value": "10.10",
+                "synonyms": ["Maverick Meerkat", "Maverick"]
+              }
+            },
+            {
+              "name": {
+                "value": "10.04",
+                "synonyms": ["Lucid Lynx", "Lucid"]
+              }
+            },
+            {
+              "name": {
+                "value": "9.10",
+                "synonyms": ["Karmic Koala", "Karmic"]
+              }
+            },
+            {
+              "name": {
+                "value": "9.04",
+                "synonyms": ["Jaunty Jackalope", "Jaunty"]
+              }
+            },
+            {
+              "name": {
+                "value": "8.10",
+                "synonyms": ["Intrepid Ibex", "Intrepid"]
+              }
+            },
+            {
+              "name": {
+                "value": "8.04",
+                "synonyms": ["Hardy Heron", "Hardy"]
+              }
+            },
+            {
+              "name": {
+                "value": "7.10",
+                "synonyms": ["Gutsy Gibbon", "Gutsy"]
+              }
+            },
+            {
+              "name": {
+                "value": "7.04",
+                "synonyms": ["Feisty Fawn", "Feisty"]
+              }
+            },
+            {
+              "name": {
+                "value": "6.10",
+                "synonyms": ["Edgy Eft", "Edgy"]
+              }
+            },
+            {
+              "name": {
+                "value": "6.06",
+                "synonyms": ["Dapper Drake", "Dapper"]
+              }
+            },
+            {
+              "name": {
+                "value": "5.10",
+                "synonyms": ["Breezy Badger", "Breezy"]
+              }
+            },
+            {
+              "name": {
+                "value": "5.04",
+                "synonyms": ["Hoary Hedgehog", "Hoary"]
+              }
+            },
+            {
+              "name": {
+                "value": "4.10",
+                "synonyms": ["Warty Warthog", "Warty"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "LatestVersion",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "projectslot",
+              "type": "PROJECT",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.1217501643367.1009565963535"
+              }
+            }
+          ]
+        },
+        {
+          "name": "WhenWasItReleased",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "projectslot",
+              "type": "PROJECT",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.1508253627733.891083853974"
+              }
+            },
+            {
+              "name": "versionslot",
+              "type": "VERSION",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.1508253627733.621265869560"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.1217501643367.1009565963535",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "You didn't ask for a project. Which one did you mean?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which project do you want information for?"
+          },
+          {
+            "type": "PlainText",
+            "value":
+              "I didn't catch which project you wanted information for. Which project did you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which project?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.1098598316974.786019044709",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value":
+              "You didn't ask about a specific version. Which version do you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which version do you want information about?"
+          },
+          {
+            "type": "PlainText",
+            "value":
+              "I didn't catch which version you wanted information for. Which version did you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which version?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.1098598316974.1315202779313",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "You didn't ask for a project. Which one did you mean?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which project do you want information for?"
+          },
+          {
+            "type": "PlainText",
+            "value":
+              "I didn't catch which project you wanted information for. Which project did you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which project?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.1508253627733.621265869560",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value":
+              "You didn't ask about a specific version. Which version do you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which version do you want information about?"
+          },
+          {
+            "type": "PlainText",
+            "value":
+              "I didn't catch which version you wanted information for. Which version did you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which version?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.1508253627733.891083853974",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "You didn't ask for a project. Which one did you mean?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which project do you want information for?"
+          },
+          {
+            "type": "PlainText",
+            "value":
+              "I didn't catch which project you wanted information for. Which project did you want?"
+          },
+          {
+            "type": "PlainText",
+            "value": "Which project?"
+          }
+        ]
+      }
+    ]
+  }
+}

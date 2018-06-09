@@ -7,10 +7,11 @@
   "license": "BSD-3-Clause",
   "repository": "Polymer/pwa-starter-kit",
   "scripts": {
-    "start": "polymer serve",
+    "start": "polymer serve --proxy-path /api --proxy-target http://localhost:3000/api",
     "build": "npm run build:prpl-server && npm run build:static",
     "build:prpl-server": "gulp clean:prpl-server && gulp build:prpl-server",
     "build:static": "polymer build",
+    "build:firebase": "polymer build --auto-base-path && gulp firebase",
     "serve:prpl-server": "prpl-server --root server/build",
     "serve:static": "polymer serve --port 5000 build/es5-bundled",
     "test": "npm run test:unit && npm run test:integration",
@@ -20,9 +21,11 @@
     "test:regenerate_screenshots": "mocha test/integration/screenshots-baseline/regenerate.js --timeout=15000"
   },
   "dependencies": {
+    "@material/mwc-button": "^0.1.1",
     "@polymer/app-layout": "^3.0.0-pre.19",
     "@polymer/lit-element": "^0.5.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
+    "formidable": "^1.2.1",
     "pwa-helpers": "^0.8.2",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",

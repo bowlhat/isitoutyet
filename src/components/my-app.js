@@ -13,6 +13,8 @@ import { LitElement, html } from '@polymer/lit-element';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
+import '@polymer/app-layout/app-scroll-effects/effects/blend-background.js';
+import '@polymer/app-layout/app-scroll-effects/effects/parallax-background.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 
@@ -29,7 +31,7 @@ import { store } from '../store.js';
 import { navigate, updateOffline, updateDrawerState, updateLayout } from '../actions/app.js';
 
 class MyApp extends connect(store)(LitElement) {
-  _render({appTitle, _page, _drawerOpened, _snackbarOpened, _offline}) {
+  _render({appTitle, _page, _project, _drawerOpened, _snackbarOpened, _offline}) {
     // Anything that's related to rendering should be done in here.
     return html`
     <style>
@@ -44,8 +46,8 @@ class MyApp extends connect(store)(LitElement) {
         --app-section-even-color: #f7f7f7;
         --app-section-odd-color: white;
 
-        --app-header-background-color: white;
-        --app-header-text-color: var(--app-dark-text-color);
+        --app-header-background-color: gray;
+        --app-header-text-color: var(--app-light-text-color);
         --app-header-selected-color: var(--app-primary-color);
 
         --app-drawer-background-color: var(--app-secondary-color);
@@ -58,15 +60,23 @@ class MyApp extends connect(store)(LitElement) {
         top: 0;
         left: 0;
         width: 100%;
+        height: 240px;
         text-align: center;
         background-color: var(--app-header-background-color);
         color: var(--app-header-text-color);
         border-bottom: 1px solid #eee;
+        --app-header-background-front-layer: {
+          background-position: center center;
+          background-image: url(images/header-bg-1600.jpg);
+        };
+        --app-header-background-rear-layer: {
+          background-color: gray;
+        };
       }
 
-      .toolbar-top {
+      /*.toolbar-top {
         background-color: var(--app-header-background-color);
-      }
+      }*/
 
       [main-title] {
         font-family: 'Pacifico';
@@ -104,6 +114,10 @@ class MyApp extends connect(store)(LitElement) {
         width: 44px;
       }
 
+      app-drawer {
+        z-index: 1;
+      }
+
       .drawer-list {
         box-sizing: border-box;
         width: 100%;
@@ -126,7 +140,7 @@ class MyApp extends connect(store)(LitElement) {
       }
 
       .main-content {
-        padding-top: 64px;
+        padding-top: 244px;
         min-height: 100vh;
       }
 
@@ -145,9 +159,17 @@ class MyApp extends connect(store)(LitElement) {
         text-align: center;
       }
 
+      footer a {
+        color: var(--app-drawer-text-color);
+      }
+
       /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout. */
       @media (min-width: 460px) {
+        app-header {
+          height: 500px;
+        }
+
         .toolbar-list {
           display: block;
         }
@@ -157,7 +179,7 @@ class MyApp extends connect(store)(LitElement) {
         }
 
         .main-content {
-          padding-top: 107px;
+          padding-top: 507px;
         }
 
         /* The drawer button isn't shown in the wide layout, so we don't
@@ -169,7 +191,7 @@ class MyApp extends connect(store)(LitElement) {
     </style>
 
     <!-- Header -->
-    <app-header condenses reveals effects="waterfall">
+    <app-header condenses reveals effects="waterfall blend-background parallax-background">
       <app-toolbar class="toolbar-top">
         <button class="menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
         <div main-title>${appTitle}</div>
@@ -177,9 +199,8 @@ class MyApp extends connect(store)(LitElement) {
 
       <!-- This gets hidden on a small screen-->
       <nav class="toolbar-list">
-        <a selected?="${_page === 'view1'}" href="/view1">View One</a>
-        <a selected?="${_page === 'view2'}" href="/view2">View Two</a>
-        <a selected?="${_page === 'view3'}" href="/view3">View Three</a>
+        <a selected?="${_page === 'about'}" href="/about">About Us</a>
+        <a selected?="${_page === 'projects'}" href="/projects">Projects</a>
       </nav>
     </app-header>
 
@@ -187,22 +208,37 @@ class MyApp extends connect(store)(LitElement) {
     <app-drawer opened="${_drawerOpened}"
         on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
       <nav class="drawer-list">
-        <a selected?="${_page === 'view1'}" href="/view1">View One</a>
-        <a selected?="${_page === 'view2'}" href="/view2">View Two</a>
-        <a selected?="${_page === 'view3'}" href="/view3">View Three</a>
+        <a selected?="${_page === 'about'}" href="/about">About Us</a>
+        <a selected?="${_page === 'projects'}" href="/projects">Projects</a>
+        <a selected?="${_page === 'privacy'}" href="/privacy">Privacy Information</a>
+        <a selected?="${_page === 'terms'}" href="/terms">Terms of Service</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main class="main-content">
-      <my-view1 class="page" active?="${_page === 'view1'}"></my-view1>
-      <my-view2 class="page" active?="${_page === 'view2'}"></my-view2>
-      <my-view3 class="page" active?="${_page === 'view3'}"></my-view3>
+      <my-about class="page" active?="${_page === 'about'}"></my-about>
+      <my-privacy class="page" active?="${_page === 'privacy'}"></my-privacy>
+      <my-terms class="page" active?="${_page === 'terms'}"></my-terms>
+      <my-projects class="page" active?="${_page === 'projects'}"></my-projects>
+      <my-single-project class="page" active?="${_page === 'single-project'}"></my-single-project>
+      <my-single-release class="page" active?="${_page === 'single-release'}"></my-single-release>
       <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
     </main>
 
     <footer>
-      <p>Made with &lt;3 by the Polymer team.</p>
+      <div>
+        <p>
+          <span>© Daniel Llewellyn T/A Bowl Hat</span>
+        </p>
+        <p>
+          <a href="/">Home</a>
+          <span>·</span>
+          <a href="/privacy">Privacy</a>
+          <span>·</span>
+          <a href="/terms">Terms</a>
+        </p>
+      </div>
     </footer>
 
     <snack-bar active?="${_snackbarOpened}">
@@ -214,6 +250,7 @@ class MyApp extends connect(store)(LitElement) {
     return {
       appTitle: String,
       _page: String,
+      _project: String,
       _drawerOpened: Boolean,
       _snackbarOpened: Boolean,
       _offline: Boolean
@@ -250,6 +287,7 @@ class MyApp extends connect(store)(LitElement) {
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;
     this._drawerOpened = state.app.drawerOpened;
+    this._project = state.app.project;
   }
 }
 
