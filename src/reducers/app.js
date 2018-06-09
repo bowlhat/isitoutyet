@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import {
   UPDATE_PAGE,
+  UPDATE_PROJECT,
+  UPDATE_RELEASE,
   UPDATE_OFFLINE,
   OPEN_SNACKBAR,
   CLOSE_SNACKBAR,
@@ -22,6 +24,16 @@ const app = (state = {drawerOpened: false}, action) => {
       return {
         ...state,
         page: action.page
+      };
+    case UPDATE_PROJECT:
+      return {
+        ...state,
+        project: action.project
+      };
+    case UPDATE_RELEASE:
+      return {
+        ...state,
+        release: action.release
       };
     case UPDATE_OFFLINE:
       return {

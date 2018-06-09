@@ -1,5 +1,10 @@
 build/
+functions/build
+
 node_modules/
+functions/node_modules/
+functions/**/*.js
+
 test/integration/screenshots-current
 yarn.lock
 .DS_Store

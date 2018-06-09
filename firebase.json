@@ -1,0 +1,56 @@
+{
+    "hosting": {
+        "public": "build",
+        "ignore": [
+            "firebase.json",
+            "**/.*"
+        ],
+        "redirects": [
+            {
+                "source": "/images/:path*",
+                "destination": "/esm-bundled/images/:path*",
+                "type": 301
+            }
+        ],
+        "rewrites": [
+            {
+                "source": "/api/graphql",
+                "function": "graphQLHandler"
+            },
+            {
+                "source": "/api/vapidPublicKey",
+                "function": "WebPushHandler"
+            },
+            {
+                "source": "/api/project/**",
+                "function": "WebPushHandler"
+            },
+            {
+                "source": "/api/talkies/**",
+                "function": "TalkieHandler"
+            },
+            {
+                "source": "/api/inbound-email*",
+                "function": "EmailHandler"
+            },
+            {
+                "source": "**",
+                "function": "PrplHandler"
+            }
+        ],
+        "headers": [
+            {
+                "source" : "**/service-worker.js",
+                "headers" : [
+                    {
+                        "key" : "Service-Worker-Allowed",
+                        "value" : "/"
+                    }
+                ]
+            }
+        ]
+    },
+    "functions": {
+        "predeploy": "npm --prefix functions run build"
+    }
+}
