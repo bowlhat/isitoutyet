@@ -31,7 +31,7 @@ class MyPrivacy extends PageViewElement {
       <section>
         <h3>Effective Dates</h3>
         <p>
-          This policy covers from 1st May 2018 until superceded by a new document with a
+          This policy covers from 13th June 2018 until superceded by a new document with a
           later date shown in this paragraph.
         </p>
       </section>
@@ -42,7 +42,8 @@ class MyPrivacy extends PageViewElement {
           We use cookies and tracking technology from Google to track usage of this site
           via Google Analytics. This enables us to see which pages people like to visit
           and the type of information they prefer. Google's privacy policy applies in
-          addition to this policy.
+          addition to this policy, which can be found at
+          <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a>.
         </p>
       </section>
       
@@ -80,7 +81,8 @@ class MyPrivacy extends PageViewElement {
         <h3>Contact</h3>
         <p>
           Do you have questions or concerns about our service or your privacy? Please
-          contact us via email to <a href="mailto:support@bowlhat.net">support@bowlhat.net</a>.
+          contact us via email to
+          <a href="mailto:support+privacy@bowlhat.net">support+privacy@bowlhat.net</a>.
         </p>
       </section>
     `;
