@@ -1,5 +1,6 @@
 {
     "hosting": {
+        "predeploy": "npm run build:firebase",
         "public": "build",
         "ignore": [
             "firebase.json",
@@ -45,12 +46,16 @@
                     {
                         "key" : "Service-Worker-Allowed",
                         "value" : "/"
+                    },
+                    {
+                        "key": "Cache-Control",
+                        "value": "no-cache"
                     }
                 ]
             }
         ]
     },
     "functions": {
-        "predeploy": "npm --prefix functions run build"
+        "predeploy": "npm run build:firebase && npm --prefix functions run build"
     }
 }
