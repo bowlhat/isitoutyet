@@ -8,20 +8,19 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element';
+import { html } from '@polymer/lit-element';
 
-import { connect } from 'pwa-helpers/connect-mixin.js';
 import { PageViewElement } from './page-view-element.js';
+import { connect } from 'pwa-helpers/connect-mixin.js';
+
 import { SharedStyles } from './shared-styles.js';
 import { store } from '../store.js';
 import { getProject } from '../actions/projects.js';
 import { getRelease } from '../actions/releases.js';
-import app from '../reducers/app.js';
 import projects from '../reducers/projects.js';
 import releases from '../reducers/releases.js';
 
 store.addReducers({
-  app,
   projects,
   releases,
 });
@@ -29,7 +28,9 @@ store.addReducers({
 class MySingleRelease extends connect(store)(PageViewElement) {
   _render({_project, _release}) {
     if (!_project || !_release) {
-      return;
+      return html`
+        <my-view404></my-view404>
+      `;
     }
     const releaseDate = new Date(_release.date);
 
@@ -55,9 +56,9 @@ class MySingleRelease extends connect(store)(PageViewElement) {
           <p>Release date: ${releaseDate.toDateString()} ${releaseDate.toTimeString()}</p>
           <p>Email received: ${_release.email.received || 'Unknown'}</p>
           <p>Subject: ${_release.email.subject}</p>
-          <div>
+          <pre>
             ${_release.email.body}
-          </div>
+          </pre>
         </article>
       </section>
     `

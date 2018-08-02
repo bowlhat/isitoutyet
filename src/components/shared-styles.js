@@ -44,6 +44,10 @@ export const SharedStyles = html`
     }
   }
 
+  pre {
+    white-space: pre-wrap;
+  }
+
   .circle {
     display: block;
     width: 64px;
