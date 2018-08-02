@@ -30,7 +30,10 @@ export const getProject = (projectSlug) => (dispatch, getState) => {
     .then(data => {
         dispatch({
             type: GET_PROJECT,
-            project: data.project
+            project: {
+                ...data.project,
+                exists: true
+            }
         });
     }).catch(() => {
         dispatch({

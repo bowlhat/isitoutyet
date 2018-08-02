@@ -15,27 +15,29 @@
  */
 
 import uuid from 'uuid/v4';
+import * as functions from 'firebase-functions';
+import { Request, Response } from 'firebase-functions';
 
 import { abortEmail, rejectEmail, authorizeEmail } from './responders';
+import { Fields } from './Fields';
 
-const EMAIL_BASIC_AUTH = process.env.EMAIL_BASIC_AUTH || '';
+let EMAIL_BASIC_AUTH = '';
+if (functions.config().emailhandler) {
+  EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
+}
 const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
 
-export const SpfHandler = (request, response) => {
+export const SpfHandler = (request: Request, response: Response) => {
   const transactionId = uuid();
 
-  const fields = request.body;
+  const fields: Fields = request.body;
 
-  const match = CREDENTIALS_REGEXP.exec(request.headers.authorization);
-  if (
-    process.env.NODE_ENV === 'development' ||
-    !match ||
-    match[1] !== EMAIL_BASIC_AUTH
-  ) {
+  const match = CREDENTIALS_REGEXP.exec(request.headers.authorization || '');
+  if (EMAIL_BASIC_AUTH && (!match || match[1] !== EMAIL_BASIC_AUTH)) {
     return abortEmail(transactionId, response)('Incorrect credentials');
   }
 
-  if (!fields.spf.result || !fields.spf.domain) {
+  if (!fields.spf || !fields.spf.result || !fields.spf.domain) {
     return abortEmail(transactionId, response)('SPF Error');
   }
 

@@ -1,6 +1,8 @@
 import { LitElement, html } from '@polymer/lit-element';
-import {Button} from "@material/mwc-button"
+// import "@material/mwc-button/mwc-button.js";
+
 import { ButtonSharedStyles } from './button-shared-styles.js';
+
 import GraphClient from '../data/graphql';
 import {queries} from '../data/queries';
 
@@ -52,7 +54,8 @@ class PushNotificationButton extends LitElement {
                     display: block;
                 }
             </style>
-            <mwc-button on-click="${() => this.clickHandler()}" disabled?="${this.disabled}">${this.buttonText}</mwc-button>
+            ${ButtonSharedStyles}
+            <button on-click="${() => this.clickHandler()}" disabled?="${this.disabled}">${this.buttonText}</button>
         `;
     }
   

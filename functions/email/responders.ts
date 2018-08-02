@@ -15,8 +15,10 @@
  */
 
 import { withId, log } from './logger';
+import { Fields } from './Fields';
+import { Response } from 'firebase-functions';
 
-const extractFields = fields => {
+const extractFields = (fields: Fields) => {
   let to = '';
   let from = '';
   let subject = '';
@@ -33,8 +35,8 @@ const extractFields = fields => {
   return { to, from, subject, spf };
 };
 
-const abortEmail = (transactionId, response) => err => {
-  const message = err.message || err || 'Unknown Error';
+const abortEmail = (transactionId: string, response: Response) => (err: Error | string | undefined) => {
+  const message = ((err instanceof Error) ? err.message : err) || 'Unknown Error';
   log('error')(withId(transactionId)(message));
   response
     .status(500)
@@ -43,7 +45,7 @@ const abortEmail = (transactionId, response) => err => {
     );
 };
 
-const rejectEmail = (transactionId, response, fields) => {
+const rejectEmail = (transactionId: string, response: Response, fields) => {
   const { to, from, subject } = extractFields(fields);
 
   return () => {
@@ -57,7 +59,7 @@ const rejectEmail = (transactionId, response, fields) => {
   };
 };
 
-const acceptEmail = (transactionId, response, fields) => {
+const acceptEmail = (transactionId: string, response: Response, fields) => {
   const { to, from, subject } = extractFields(fields);
 
   return () => {
@@ -69,7 +71,7 @@ const acceptEmail = (transactionId, response, fields) => {
   };
 };
 
-const authorizeEmail = (transactionId, response, fields) => {
+const authorizeEmail = (transactionId: string, response: Response, fields) => {
   const { to, from, spf } = extractFields(fields);
 
   return () => {

@@ -1,5 +1,5 @@
 import alexa from 'alexa-app';
-import { latestVersionForProject, whenWasItReleased } from './common';
+import { versionForProject } from './common';
 
 export const Alexa = app => {
   const alexaApp = new alexa.app('iioy'); // eslint-disable-line new-cap
@@ -10,55 +10,60 @@ export const Alexa = app => {
     endpoint: 'api/talkies/alexa',
   });
 
-  alexaApp.intent('LatestVersion', undefined, async (req, res) => {
-    let requestedProject = req.slot('projectslot', '');
-    requestedProject = requestedProject.replace(/[?!,]*$/, '');
-
-    const utterance = await latestVersionForProject(requestedProject);
-
-    res.say(utterance.text);
-    res.shouldEndSession(false);
-
-    if (req.hasSession()) {
-      const session = req.getSession();
-      Object.keys(utterance.data).forEach(key => {
-        session.set(key, utterance.data[key]);
-      });
-    }
-  });
-
-  alexaApp.intent('WhenWasItReleased', undefined, async (req, res) => {
+  alexaApp.intent('releaseInfo', undefined, (req, res) => {
     let requestedProject = req.slot('projectslot') || '';
     let version = req.slot('versionslot') || '';
-    if (req.hasSession()) {
-      if (!requestedProject) {
-        requestedProject = req.getSession().get('Project') || '';
-      }
-      if (!version) {
-        version = req.getSession().get('Version') || '';
-      }
-    }
 
-    if (!requestedProject || !version) {
+    requestedProject = requestedProject.trim();
+    version = version.trim();
+
+    if (!requestedProject) {
       res.getDirectives().set({
         type: 'Dialog.Delegate',
       });
       return res.shouldEndSession(false);
     }
 
-    const response = await whenWasItReleased(requestedProject, version);
-    if (response !== null) {
-      // TODO: Use Locales
-      const responseText = `${response.Project} ${response.Version}${
-        response.Codename ? ` ${response.Codename}` : ''
-      }${
-        response.LTS ? ' Long Term Support' : ''
-      } was released on <say-as interpret-as='date'>${response.Date.toDateString()}</say-as>`;
-      return res.say(responseText);
-    }
+    return versionForProject(requestedProject, version)
+      .then(utterance => {
+        res.say(utterance.ssml || utterance.text)
+        .card({
+          type: 'Standard',
+          title: utterance.cardTitle,
+          text: utterance.text,
+          image: {
+            smallImageUrl: utterance.image,
+          },
+        });
+      })
+      .catch(() => {
+        res.say(`I can't answer that right now because something is broken. Please try later.`)
+      });
+  });
 
-    return res.say(
-      `Sorry, I don't know when ${requestedProject} ${version} was released..`,
-    );
+  alexaApp.intent("AMAZON.HelpIntent", {
+    "slots": {},
+    "utterances": []
+  }, function(request, response) {
+    var helpOutput = "You can say 'tell me about Ubuntu' or ask 'when was Ubuntu Xenial released?'. You can also say stop or exit to quit.";
+    var reprompt = "What would you like to do?";
+    // AMAZON.HelpIntent must leave session open -> .shouldEndSession(false)
+    response.say(helpOutput).reprompt(reprompt).shouldEndSession(false);
+  });
+  
+  alexaApp.intent("AMAZON.StopIntent", {
+    "slots": {},
+    "utterances": []
+  }, function(request, response) {
+    var stopOutput = "OK.";
+    response.say(stopOutput);
+  });
+  
+  alexaApp.intent("AMAZON.CancelIntent", {
+    "slots": {},
+    "utterances": []
+  }, function(request, response) {
+    var cancelOutput = "No problem. Request cancelled.";
+    response.say(cancelOutput);
   });
 };

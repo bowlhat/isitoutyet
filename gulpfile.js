@@ -13,6 +13,8 @@ const rename = require('gulp-rename');
 const replace = require('gulp-replace');
 const del = require('del');
 
+const renamer = new Renamer();
+
 /**
  * Cleans the prpl-server build in the server directory.
  */

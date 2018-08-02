@@ -27,12 +27,20 @@
                 "function": "WebPushHandler"
             },
             {
-                "source": "/api/talkies/**",
-                "function": "TalkieHandler"
+                "source": "/api/talkies/dialogflow",
+                "function": "DialogflowHandler"
             },
             {
-                "source": "/api/inbound-email*",
-                "function": "EmailHandler"
+                "source": "/api/talkies/raw",
+                "function": "TalkieAPIHandler"
+            },
+            {
+                "source": "/api/inbound-email",
+                "function": "EmailReceiveHandler"
+            },
+            {
+                "source": "/api/inbound-email-authorize",
+                "function": "EmailSPFHandler"
             },
             {
                 "source": "**",
