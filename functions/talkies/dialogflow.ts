@@ -1,97 +1,71 @@
-import { latestVersionForProject, whenWasItReleased } from './common';
+import {WebhookClient, Card, Suggestion, Text} from 'dialogflow-fulfillment';
+import * as functions from 'firebase-functions';
 
-const DIALOGFLOW_BASIC_AUTH = process.env.DIALOGFLOW_BASIC_AUTH || '';
+import { versionForProject } from './common';
+import { TextDecoder } from 'util';
+
+let DIALOGFLOW_BASIC_AUTH = '';
+if (functions.config().dialogflow) {
+  DIALOGFLOW_BASIC_AUTH = functions.config().dialogflow.basicauth || '';
+}
 const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
 
 const sorry = {
   fulfillmentText: `Sorry, I can't help you with that..`,
 };
 
-export const DialogFlow = (req, res) => {
-  const match = CREDENTIALS_REGEXP.exec(req.headers.authorization);
-  if (
-    process.env.NODE_ENV === 'development' ||
-    !match ||
-    match[1] !== DIALOGFLOW_BASIC_AUTH
-  ) {
-    return res.status(403).send('Unauthorized');
+export const DialogFlow = (request, response) => {
+  const match = CREDENTIALS_REGEXP.exec(request.headers.authorization);
+  if (DIALOGFLOW_BASIC_AUTH && (!match || match[1] !== DIALOGFLOW_BASIC_AUTH)) {
+    return response.status(403).send('Unauthorized');
   }
 
-  // const postData = JSON.parse(req.body);
-  if ('queryResult' in req.body && 'parameters' in req.body.queryResult) {
-    let requestedProject = req.body.queryResult.parameters.Project;
-    if (requestedProject) {
-      if (
-        !('intent' in req.body.queryResult) ||
-        req.body.queryResult.intent.displayName === 'Latest version'
-      ) {
-        requestedProject = requestedProject.replace(/[?!,]*$/, '');
+  const agent = new WebhookClient({ request, response });
 
-        return latestVersionForProject(requestedProject)
-          .then(utterance => {
-            const reply = {
-              text: utterance.text,
-              data: {
-                Project: utterance.data.Project,
-                Version: utterance.data.Version,
-                Codename: utterance.data.Codename,
-                Date: 'an unknown date',
-              },
-            };
+  function welcome(agent) {
+    agent.add(`Welcome to Is It Out Yet!`);
+  }
 
-            if (utterance.data.Date) {
-              reply.data.Date = utterance.data.Date.toDateString();
-            }
+  function fallback(agent) {
+    agent.add(`I didn't understand`);
+    agent.add(`I'm sorry, can you try again?`);
+  }
 
-            res.json({
-              fulfillmentText: reply.text || 'WHA. Something went wrong!',
-              outputContexts: [
-                {
-                  name: `${req.body.session}/contexts/latestversion-followup`,
-                  lifespanCount: 1,
-                  parameters: reply.data || {},
-                },
-              ],
+  function releaseInfo(agent) {
+    let requestedProject = agent.parameters.Project || '';
+    let version = agent.parameters.Version || '';
+    
+    requestedProject = requestedProject.trim();
+    version = version.trim();
+
+    return versionForProject(requestedProject, version)
+      .then(utterance => {
+        const text = new Text(utterance.text);
+        if (utterance.ssml) {
+          text.setSsml(`<speak>${utterance.ssml}</speak>`);
+        };
+        agent.add(text);
+
+        for (const platform of ['FACEBOOK','SLACK','TELEGRAM','KIK','SKYPE','LINE','VIBER','ACTIONS_ON_GOOGLE']) {
+          const card = new Card(utterance.cardTitle);
+          card.setImage(utterance.image);
+          card.setText(utterance.text);
+          card.setPlatform(platform);
+          if (utterance.url) {
+            card.setButton({
+              text: `Open the release notes...`,
+              url: utterance.url,
             });
-          })
-          .catch(() => res.status(500).send('Error'));
-      }
-
-      if (
-        req.body.queryResult.intent.displayName ===
-        'When was project and version released'
-      ) {
-        const version = req.body.queryResult.parameters.Version;
-        if (version) {
-          return whenWasItReleased(requestedProject, version)
-            .then(response => {
-              if (response !== null) {
-                return res.json({
-                  fulfillmentText: `${response.Project} ${response.Version}${
-                    response.Codename ? ` ${response.Codename}` : ''
-                  }${
-                    response.LTS ? ' Long Term Support' : ''
-                  } was released on ${response.Date.toDateString()}`,
-                });
-              }
-
-              return res.json({
-                fulfillmentText: `Sorry, I don't know when ${requestedProject} ${version} was released..`,
-              });
-            })
-            .catch(() => res.status(500).send('Error'));
+          }
+          agent.add(card);
         }
-
-        return res.json({
-          fulfillmentText: `Sorry, I don't know about that release of ${requestedProject}..`,
-        });
-      }
-
-      return res.json(sorry);
-    }
-
-    return res.json(sorry);
+      })
+      .catch(() => { agent.add(`I can't answer that right now because something is broken. Please try later.`) });
   }
 
-  return res.json(sorry);
-};
+  let intentMap = new Map();
+  intentMap.set('Default Welcome Intent', welcome);
+  intentMap.set('Default Fallback Intent', fallback);
+  intentMap.set('Release info', releaseInfo);
+  agent.handleRequest(intentMap);
+}

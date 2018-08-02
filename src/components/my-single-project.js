@@ -8,10 +8,11 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
+import { html } from '@polymer/lit-element';
 
 import { PageViewElement } from './page-view-element.js';
+import { connect } from 'pwa-helpers/connect-mixin.js';
+
 import './push-notification-button.js';
 import { SharedStyles } from './shared-styles.js';
 import { store } from '../store.js';
@@ -24,7 +25,7 @@ store.addReducers({
 
 class MySingleProject extends connect(store)(PageViewElement) {
   _render({project, _project}) {
-    if (!_project) {
+    if (!_project.exists) {
       return html`
         <my-view404></my-view404>
       `;
@@ -68,7 +69,7 @@ class MySingleProject extends connect(store)(PageViewElement) {
 
       <section>
         <article>
-            <push-notification-button project="${project}"></push-notification-button>
+          <push-notification-button project="${project}"></push-notification-button>
           ${_project.logo && html`
             <div class="logo">
               <img src="${_project.logo}" alt="${_project.name} logo" />

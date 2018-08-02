@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-import formidable from 'formidable';
+// import * as formidable from 'formidable';
 import XRegExp from 'xregexp';
 import uuid from 'uuid/v4';
 import webPush from 'web-push';
+import * as functions from 'firebase-functions';
 
+import sequelize from '../data/sequelize';
 import { Project, Release, Email, ReleaseEmail, PushSubscription } from '../data/models';
 import { abortEmail, acceptEmail } from './responders';
+import { Request, Response } from 'firebase-functions';
+
+// function formidablePromise (req) {
+//   return new Promise<{fields: formidable.Fields, files: formidable.Files}>(function (resolve, reject) {
+//     var form = new formidable.IncomingForm()
+//     form.parse(req, function (err, fields, files) {
+//       if (err) return reject(err)
+//       resolve({ fields: fields, files: files })
+//     })
+//   })
+// }
 
 const months = [
   'Jan',
@@ -37,133 +50,138 @@ const months = [
   'Dec',
 ];
 
-const EMAIL_BASIC_AUTH = process.env.EMAIL_BASIC_AUTH || '';
+let EMAIL_BASIC_AUTH = '';
+if (functions.config().emailhandler) {
+  EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
+}
 const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
 
-export const ReceiveHandler = (request, response) => {
+export const ReceiveHandler = async (request: Request, response: Response) => {
   const transactionId = uuid();
-  const form = new formidable.IncomingForm();
+  console.log('function start');
 
-  form.parse(request, async (err, fields) => {
-    if (err) {
-      return abortEmail(transactionId, response)(err);
-    }
-
-    const match = CREDENTIALS_REGEXP.exec(request.headers.authorization);
-    if (
-      process.env.NODE_ENV === 'development' ||
-      !match ||
-      match[1] !== EMAIL_BASIC_AUTH
-    ) {
+  try {
+    const match = CREDENTIALS_REGEXP.exec(request.headers.authorization || '');
+    if (EMAIL_BASIC_AUTH && (!match || match[1] !== EMAIL_BASIC_AUTH)) {
       return abortEmail(transactionId, response)('Incorrect credentials');
     }
+    console.log('auth accepted')
+    
+    const fields = request.body;
+    const dateparts = (fields.headers.Date as string).split(' ');
+    const timeparts = dateparts[4].split(':').map(part => parseInt(part, 10));
 
-    acceptEmail(transactionId, response, fields)();
-
-    try {
-      const dateparts = (fields['headers[Date]'] as string).split(' ');
-      const timeparts = dateparts[4].split(':').map(part => parseInt(part, 10));
-
-      if (dateparts[5]) {
-        const offsetDirection = dateparts[5].substr(0, 1);
-        let offsetHours = parseInt(dateparts[5].substr(1, 2), 10);
-        let offsetMinutes = parseInt(dateparts[5].substr(3, 2), 10);
-        if (offsetDirection === '+') {
-          offsetHours = -offsetHours;
-          offsetMinutes = -offsetMinutes;
-        }
-        timeparts[0] += offsetHours;
-        timeparts[1] += offsetMinutes;
+    if (dateparts[5]) {
+      const offsetDirection = dateparts[5].substr(0, 1);
+      let offsetHours = parseInt(dateparts[5].substr(1, 2), 10);
+      let offsetMinutes = parseInt(dateparts[5].substr(3, 2), 10);
+      if (offsetDirection === '+') {
+        offsetHours = -offsetHours;
+        offsetMinutes = -offsetMinutes;
       }
+      timeparts[0] += offsetHours;
+      timeparts[1] += offsetMinutes;
+    }
+    console.log('extracted date')
 
-      const date = new Date(
-        parseInt(dateparts[3], 10),
-        months.indexOf(dateparts[2]),
-        parseInt(dateparts[1], 10),
-        timeparts[0],
-        timeparts[1],
-        timeparts[2],
-      );
+    const date = new Date(
+      parseInt(dateparts[3], 10),
+      months.indexOf(dateparts[2]),
+      parseInt(dateparts[1], 10),
+      timeparts[0],
+      timeparts[1],
+      timeparts[2],
+    );
+    console.log('parsed date')
 
-      const project = await Project.findOne({
-        where: { toaddress: fields['headers[To]'] },
-      });
+    const project = await Project.findOne({
+      where: { toaddress: fields.headers.To },
+    });
+    console.log('found project');
 
-      const emailData = {
-        sentto: fields['headers[To]'],
-        sentfrom: fields['headers[From]'],
-        subject: fields['headers[Subject]'],
-        body: fields.plain,
-      };
+    const emailData = {
+      sentto: fields.headers.To,
+      sentfrom: fields.headers.From,
+      subject: fields.headers.Subject,
+      body: fields.plain,
+    };
+    console.log('extracted email data')
 
-      if (project) {
-        const re = XRegExp(project['regex'], 'i');
+    if (project) {
+      console.log('have project')
+      const re = XRegExp(project['regex'], 'i');
+      console.log('build XRegExp')
+      if (re.test(fields['headers[Subject]'] as string)) {
+        console.log('matched subject')
+        const matches = XRegExp.exec(fields['headers[Subject]'] as string, re);
 
-        if (re.test(fields['headers[Subject]'] as string)) {
-          const matches = XRegExp.exec(fields['headers[Subject]'] as string, re);
+        const version = matches['version'] || '';
+        const tmpcode = matches['codename2'] || '';
+        const codename = matches['codename'] || tmpcode;
+        const isLTS = matches['lts'] && matches['lts'].indexOf('LTS') > -1;
+        const beta = matches['betatext'] || '';
+        const rc = matches['rctext'] || '';
 
-          const version = matches['version'] || '';
-          const tmpcode = matches['codename2'] || '';
-          const codename = matches['codename'] || tmpcode;
-          const isLTS = matches['lts'] && matches['lts'].indexOf('LTS') > -1;
-          const beta = matches['betatext'] || '';
-          const rc = matches['rctext'] || '';
+        const release = await Release.create(
+          {
+            email: emailData,
+            date,
+            version,
+            codename,
+            islts: isLTS,
+            beta: `${beta} ${rc}`,
+          },
+          {
+            include: [
+              {
+                association: ReleaseEmail,
+              },
+            ],
+          },
+        );
+        project['addRelease'](release);
+        let subscriptions = await PushSubscription.findAll({
+          where: {
+            projectId: project['id'],
+          },
+        });
 
-          const release = await Release.create(
-            {
-              email: emailData,
-              date,
-              version,
-              codename,
-              islts: isLTS,
-              beta: `${beta} ${rc}`,
-            },
-            {
-              include: [
-                {
-                  association: ReleaseEmail,
-                },
-              ],
-            },
-          );
-          project['addRelease'](release);
-          acceptEmail(transactionId, response, fields)();
-          const subscriptions = await PushSubscription.findAll({
-            where: {
-              projectId: project['id'],
-            },
-          });
+        const text = `
+          ${project['name']} ${release['version']}
+          has just been released!
+        `;
 
-          const text = `${project['name']} ${
-            release['version']
-          } has just been released!`;
+        const doNotification = () => {
+          const sub = subscriptions.shift();
+          if (sub === undefined) {
+            return;
+          }
 
-          const doNotification = () => {
-            const sub = subscriptions.shift();
-            if (sub === undefined) {
-              return;
-            }
-
-            webPush
-              .sendNotification(JSON.parse(sub['subscription']), text, {})
-              .then(doNotification)
-              .catch(doNotification);
-          };
-        }
+          webPush
+            .sendNotification(JSON.parse(sub['subscription']), text, {})
+            .then(() => { setTimeout(doNotification, 0); })
+            .catch(() => { setTimeout(doNotification, 0); });
+        };
+        setTimeout(doNotification, 0);
       }
+    }
 
-      // if we get here then we didn't match a project for the email.
-      // let's save it anyway in case we get complaints about missing data
-      Email.create({
-        sentto: fields['headers[To]'],
-        sentfrom: fields['headers[From]'],
-        subject: fields['headers[Subject]'],
-        received: new Date(),
-        body: fields.plain,
-      });
-      return null;
-    } catch (e) {
+    console.log('creating email')
+    // if we get here then we didn't match a project for the email.
+    // let's save it anyway in case we get complaints about missing data
+    Email.create({
+      sentto: fields['headers[To]'],
+      sentfrom: fields['headers[From]'],
+      subject: fields['headers[Subject]'],
+      received: new Date(),
+      body: fields.plain,
+    });
+    console.log('finished')
+    return acceptEmail(transactionId, response, fields)();
+  } catch (e) {
+    console.log(`error encountered: ${e}`)
+    if (!response.headersSent) {
       return abortEmail(transactionId, response)(e);
     }
-  });
+  }
 };
