@@ -181,5 +181,5 @@ export const ReceiveHandler = (req: Request, res: Response) => {
     if (!res.headersSent) {
       abortEmail(transactionId, res)(e);
     }
-  });
+  }
 };
