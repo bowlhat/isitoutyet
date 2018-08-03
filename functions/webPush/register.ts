@@ -1,34 +1,35 @@
-import './vapidKey';
+import { Request, Response } from 'firebase-functions';
 
-import { Project, PushSubscription } from '../data/models';
+import { admin } from '../firebase';
+import { Project } from '../data/models';
 
-export const RegisterPushNotification = async (req, res) => {
+export const RegisterPushNotification = (req: Request, res: Response) => {
   const { subscription } = req.body;
   if (!subscription) {
     console.error('No push subscription data provided by client');
     return res.sendStatus(403);
   }
 
-  const project = await Project.findOne({
+  Project.findOne({
     where: {
       slug: req.params.project,
     },
-  });
-  if (!project) {
-    console.error('Project does not exist for push subscription');
-    return res.sendStatus(404);
-  }
+  }).then(async project => {
+    if (project) {
+      return admin.messaging().subscribeToTopic(subscription, project['slug'])
+      .then(response => {
+        console.log('Register push: Successfully subscribed:', response);
+        res.sendStatus(200);
+      }).catch(e => {
+        console.log('Register push: Error subscribing:', e);
+        res.sendStatus(500);
+      });
+    }
 
-  const savedSubscription = await PushSubscription.create({
-    subscription: JSON.stringify(subscription),
-  });
-  if (savedSubscription) {
-    await project['addPushSubscription'](savedSubscription);
-    return res.sendStatus(200);
-  }
-
-  console.error(
-    'We reached the end of push subscription function but got confused somewhere',
-  );
-  return res.sendStatus(404);
+    console.error('Register push: Project does not exist:', req.params.project);
+    res.sendStatus(404);
+  }).catch(e => {
+    console.error('Register push: Error looking-up project:', e);
+    res.sendStatus(404);
+  })
 }

@@ -1,36 +1,34 @@
-import './vapidKey';
+import { Request, Response } from 'firebase-functions';
 
-import { Project, PushSubscription } from '../data/models';
+import { admin } from '../firebase';
+import { Project } from '../data/models';
 
-export const UnRegisterPushNotification = async (req, res) => {
+export const UnRegisterPushNotification = (req: Request, res: Response) => {
   const { subscription } = req.body;
   if (!subscription) {
     return res.send(403);
   }
 
-  const project = await Project.findOne({
+  Project.findOne({
     where: {
       slug: req.params.project,
     },
-  });
-  if (!project) {
+  }).then(async project => {
+    if (project) {
+      return admin.messaging().unsubscribeFromTopic(subscription, project['slug'])
+      .then(response => {
+        console.log('Unregister push: Successfully unsubscribed:', response);
+        res.sendStatus(200);
+      }).catch(e => {
+        console.log('Unregister push: Error unsubscribing:', e);
+        res.sendStatus(500);
+      })
+    }
+
+    console.error('Unregister push: Project does not exist:', req.params.project);
     return res.sendStatus(404);
-  }
-
-  const savedSubscriptions = await PushSubscription.findAll({
-    where: {
-      subscription: JSON.stringify(subscription),
-      projectId: project['id'],
-    },
+  }).catch(e => {
+    console.log('Unregister push: Error looking-up project:', e);
+    res.sendStatus(500);
   });
-  if (savedSubscriptions) {
-    await PushSubscription.destroy({
-      where: {
-        id: savedSubscriptions.map(sub => sub['id']),
-      },
-    });
-    return res.sendStatus(200);
-  }
-
-  return res.sendStatus(404);
 }

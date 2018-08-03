@@ -43,13 +43,7 @@
     "polymer-cli": "^1.7.7",
     "polyserve": "^0.27.12",
     "prpl-server": "^1.1.0",
-<<<<<<< Updated upstream
     "puppeteer": "^1.4.0",
-=======
-    "puppeteer": "^1.6.1",
-    "renamer": "^1.0.0",
-    "replace": "^1.0.0",
->>>>>>> Stashed changes
     "wct-browser-legacy": "^1.0.1"
   }
 }

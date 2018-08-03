@@ -1,49 +1,44 @@
 import { LitElement, html } from '@polymer/lit-element';
 // import "@material/mwc-button/mwc-button.js";
 
-import { ButtonSharedStyles } from './button-shared-styles.js';
-
+import { ButtonSharedStyles } from './button-shared-styles';
 import GraphClient from '../data/graphql';
-import {queries} from '../data/queries';
+import {messaging} from '../push-notifications';
 
 const graphQLOptions = {
     url: '/api/graphql',
 };
 const client = new GraphClient(graphQLOptions);
 
-let vapidKey = '';
-const notifyText = 'Notify me!';
-const stopNotifyText = 'Stop notifying me';
-const errorMsg = 'An error occurred';
+const unavailNotifyText = 'Notifcations unavailable';
+const notifyText        = 'Notify me!';
+const stopNotifyText    = 'Stop notifying me';
+const errorMsg          = 'An error occurred';
 
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-  
-    for (let i = 0; i < rawData.length; i += 1) {
-        outputArray[i] = rawData.charCodeAt(i);
+function storageAvailable(type) {
+    try {
+        var storage = window[type],
+            x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
     }
-    return outputArray;
-}
-
-function getPushSubscription() {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        return navigator.serviceWorker.ready.then(
-            registration => registration.pushManager.getSubscription());
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage.length !== 0;
     }
-    return Promise.reject();
 }
-
-fetch('/api/vapidPublicKey', {
-    method: 'GET',
-})
-.then(res => res.text())
-.then(key => {
-    vapidKey = urlBase64ToUint8Array(key)
-})
+const localStorageActive = storageAvailable('localStorage');
 
 class PushNotificationButton extends LitElement {
     _render() {
@@ -55,7 +50,12 @@ class PushNotificationButton extends LitElement {
                 }
             </style>
             ${ButtonSharedStyles}
-            <button on-click="${() => this.clickHandler()}" disabled?="${this.disabled}">${this.buttonText}</button>
+            ${(this.twoButtonMode === true) ? html`
+                <button on-click="subscribe" disabled?="${this.disabled}">${notifyText}</button>
+                <button on-click="unsubscribe" disabled?="${this.disabled}">${stopNotifyText}</button>
+            ` : html`
+                <button on-click="clickHandler" disabled?="${this.disabled}">${this.buttonText}</button>            
+            `}
         `;
     }
   
@@ -63,100 +63,89 @@ class PushNotificationButton extends LitElement {
         disabled: Boolean,
         subscribed: Boolean,
         buttonText: String,
-        project: String,
+        project: {
+            type: String,
+            observer: '_projectChanged'
+        }
     }};
-
+  
     constructor() {
         super();
-        this.disabled = true;
-        this.subscribed = false;
-        this.buttonText = 'Notifcations unavailable';
-    }
-  
-    _firstRendered() {
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            this.disabled = false;
-            this.buttonText = notifyText;
-
-            getPushSubscription().then(subscription => {
-                if (subscription) {
-                    client.get(queries.PushSubscription, { project: this.project, subscription: JSON.stringify(subscription) })
-                    .then(data => {
-                        if (this.disabled) {
-                            this.disabled = false;
-                        }
-
-                        if (
-                            data && data.project &&
-                            data.project.pushSubscriptions &&
-                            data.project.pushSubscriptions.length > 0
-                        ) {
-                            this.subscribed = true;
-                            this.buttonText = stopNotifyText;
-                        }
-                    });
-                }
-            })
-            .catch(() => {
-                this.buttonText = errorMsg;
-            });
+        if (localStorageActive) {
+            this.twoButtonMode = false;
+        } else {
+            this.subscribed = false;
+            this.twoButtonMode = true;
         }
+        this.messaging = window.firebaseMessaging;
+    }
+
+    _projectChanged(newProject) {
+        if (!localstorageActive) {
+            return;
+        }
+        this.subscribed = ('subscribed' === localStorage.getItem(newProject));
     }
   
     subscribe() {
-        navigator.serviceWorker.ready
-        .then(registration => registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: vapidKey,
-        }))
-        .then(subscription => fetch(`/api/project/${this.project}/register`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                subscription,
-            }),
-        }))
+        return messaging.requestPermission()
+        .then(messaging.getToken)
+        .then(token => {
+            if (token) {
+                return fetch(`/api/project/${this.project}/register`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: token,
+                });
+            }
+            this.buttonText = unavailNotifyText;
+        })
         .then(() => {
             this.buttonText = stopNotifyText;
             this.subscribed = true;
+            localStorage.setItem(this.project, 'subscribed');
         })
-        .catch((e) => {
+        .catch(e => {
+            console.log('Error subscribing push notifications:', e);
             this.buttonText = errorMsg;
         });
     }
   
     unsubscribe() {
-        getPushSubscription()
-        .then(subscription => fetch(`/api/project/${this.project}/unregister`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                subscription,
-            }),
-        }))
+        return messaging.getToken()
+        .then(token => {
+            if (token) {
+                return fetch(`/api/project/${this.project}/unregister`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        subscription,
+                    }),
+                });
+            }
+        })
         .then(() => {
             this.buttonText = notifyText;
             this.subscribed = false;
+            localStorage.setItem(this.project, false);
         })
-        .catch((e) => {
+        .catch(e => {
+            console.log('Erorr unsubscribing push notifications:', e)
             this.buttonText = errorMsg;
         })
     }
   
     clickHandler() {
-        getPushSubscription()
-        .then(subscription => {
-            if (!subscription || !this.subscribed) {
-                return this.subscribe();
-            }
-            return this.unsubscribe();
-        });
+        if (!this.subscribed) {
+            return this.subscribe();
+        }
+        return this.unsubscribe();
     }
 }
 

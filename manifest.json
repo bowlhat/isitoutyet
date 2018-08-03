@@ -107,5 +107,6 @@
     ],
     "theme_color": "#603cba",
     "background_color": "#ffffff",
-    "display": "standalone"
+    "display": "standalone",
+    "gcm_sender_id": "103953800507"
 }

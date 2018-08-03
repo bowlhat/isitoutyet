@@ -37,6 +37,8 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
 
+import '../push-notifications.js';
+
 class MyApp extends connect(store)(LitElement) {
   _render({appTitle, _page, _project, _drawerOpened, _snackbarOpened, _offline}) {
     // Anything that's related to rendering should be done in here.
