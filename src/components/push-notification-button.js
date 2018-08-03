@@ -41,7 +41,7 @@ function storageAvailable(type) {
 const localStorageActive = storageAvailable('localStorage');
 
 class PushNotificationButton extends LitElement {
-    _render() {
+    _render({disabled, subscribed, twoButtonMode}) {
         return html`
             <style>
                 :host {
@@ -50,11 +50,11 @@ class PushNotificationButton extends LitElement {
                 }
             </style>
             ${ButtonSharedStyles}
-            ${(this.twoButtonMode === true) ? html`
-                <button on-click="subscribe" disabled?="${this.disabled}">${notifyText}</button>
-                <button on-click="unsubscribe" disabled?="${this.disabled}">${stopNotifyText}</button>
+            ${(twoButtonMode === true) ? html`
+                <button on-click="${e => this.subscribe(e)}" disabled?="${disabled}">${notifyText}</button>
+                <button on-click="${e => this.unsubscribe(e)}" disabled?="${disabled}">${stopNotifyText}</button>
             ` : html`
-                <button on-click="clickHandler" disabled?="${this.disabled}">${this.buttonText}</button>            
+                <button on-click="${e => this.clickHandler(e)}" disabled?="${disabled}">${subscribed ? stopNotifyText : notifyText}</button>            
             `}
         `;
     }
@@ -62,7 +62,7 @@ class PushNotificationButton extends LitElement {
     static get properties() { return {
         disabled: Boolean,
         subscribed: Boolean,
-        buttonText: String,
+        twoButtonMode: Boolean,
         project: {
             type: String,
             observer: '_projectChanged'
@@ -71,25 +71,29 @@ class PushNotificationButton extends LitElement {
   
     constructor() {
         super();
+        this.buttonText = unavailNotifyText;
         if (localStorageActive) {
             this.twoButtonMode = false;
-        } else {
             this.subscribed = false;
+        } else {
             this.twoButtonMode = true;
         }
-        this.messaging = window.firebaseMessaging;
     }
 
-    _projectChanged(newProject) {
-        if (!localstorageActive) {
-            return;
+    _propertiesChanged(props, changedProps, prevProps) {
+        if ('project' in changedProps) {
+            if (localStorageActive) {
+                props.subscribed = changedProps.subscribed = (
+                    'subscribed' === localStorage.getItem(props.project));
+            }
         }
-        this.subscribed = ('subscribed' === localStorage.getItem(newProject));
+
+        super._propertiesChanged(props, changedProps, prevProps);
     }
   
     subscribe() {
         return messaging.requestPermission()
-        .then(messaging.getToken)
+        .then(() => messaging.getToken())
         .then(token => {
             if (token) {
                 return fetch(`/api/project/${this.project}/register`, {
@@ -98,7 +102,7 @@ class PushNotificationButton extends LitElement {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: token,
+                    body: JSON.stringify({token}),
                 });
             }
             this.buttonText = unavailNotifyText;
@@ -124,21 +128,17 @@ class PushNotificationButton extends LitElement {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        subscription,
-                    }),
+                    body: JSON.stringify({token}),
                 });
             }
         })
         .then(() => {
-            this.buttonText = notifyText;
             this.subscribed = false;
             localStorage.setItem(this.project, false);
         })
         .catch(e => {
             console.log('Erorr unsubscribing push notifications:', e)
-            this.buttonText = errorMsg;
-        })
+        });
     }
   
     clickHandler() {

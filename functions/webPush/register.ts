@@ -4,9 +4,9 @@ import { admin } from '../firebase';
 import { Project } from '../data/models';
 
 export const RegisterPushNotification = (req: Request, res: Response) => {
-  const { subscription } = req.body;
-  if (!subscription) {
-    console.error('No push subscription data provided by client');
+  const { token } = req.body;
+  if (!token) {
+    console.error('Register Push: No token provided by client');
     return res.sendStatus(403);
   }
 
@@ -16,7 +16,7 @@ export const RegisterPushNotification = (req: Request, res: Response) => {
     },
   }).then(async project => {
     if (project) {
-      return admin.messaging().subscribeToTopic(subscription, project['slug'])
+      return admin.messaging().subscribeToTopic(token, project['slug'])
       .then(response => {
         console.log('Register push: Successfully subscribed:', response);
         res.sendStatus(200);

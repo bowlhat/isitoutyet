@@ -43,6 +43,14 @@
                 "function": "EmailSPFHandler"
             },
             {
+                "source": "/service-worker.js",
+                "destination": "/esm-bundled/service-worker.js"
+            },
+            {
+                "source": "/firebase-messaging-sw.js",
+                "destination": "/esm-bundled/firebase-messaging-sw.js"
+            },
+            {
                 "source": "**",
                 "function": "PrplHandler"
             }

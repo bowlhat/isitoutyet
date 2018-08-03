@@ -4,8 +4,9 @@ import { admin } from '../firebase';
 import { Project } from '../data/models';
 
 export const UnRegisterPushNotification = (req: Request, res: Response) => {
-  const { subscription } = req.body;
-  if (!subscription) {
+  const { token } = req.body;
+  if (!token) {
+    console.error('Unregister Push: No token provided by client');
     return res.send(403);
   }
 
@@ -15,7 +16,7 @@ export const UnRegisterPushNotification = (req: Request, res: Response) => {
     },
   }).then(async project => {
     if (project) {
-      return admin.messaging().unsubscribeFromTopic(subscription, project['slug'])
+      return admin.messaging().unsubscribeFromTopic(token, project['slug'])
       .then(response => {
         console.log('Unregister push: Successfully unsubscribed:', response);
         res.sendStatus(200);

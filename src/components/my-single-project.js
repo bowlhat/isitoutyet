@@ -25,7 +25,7 @@ store.addReducers({
 
 class MySingleProject extends connect(store)(PageViewElement) {
   _render({project, _project}) {
-    if (!_project.exists) {
+    if (!_project || !_project.exists) {
       return html`
         <my-view404></my-view404>
       `;
