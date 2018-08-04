@@ -1,4 +1,4 @@
-const messaging = firebase.messaging();
+import {messaging} from './firebase';
 
 messaging.usePublicVapidKey('BOa9ae5yjtELFjAZleIjNlbq55F5a1vKpTseJXK073AIanjq2QAznwuxSUDWU3fm4a4KM6GQ7hFiMiA9dSUmwN8');
 if ('serviceWorker' in navigator) {

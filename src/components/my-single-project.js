@@ -18,14 +18,39 @@ import { SharedStyles } from './shared-styles.js';
 import { store } from '../store.js';
 import { getProject } from '../actions/projects.js';
 import projects from '../reducers/projects.js';
+import releases from '../reducers/releases.js';
+import { getAllReleases } from '../actions/releases.js';
 
 store.addReducers({
-  projects
+  projects,
+  releases,
+});
+
+let currentProjectId = '';
+
+let acting = false;
+
+store.subscribe(() => {
+  if (!acting) {
+    acting = true;
+
+    const state       = store.getState();
+    const {projectId} = state.app;
+    
+    if (projectId && currentProjectId !== projectId) {
+      console.log('Single project: Fetch new project:', projectId);
+      store.dispatch(getProject(projectId));
+      store.dispatch(getAllReleases(projectId));
+      currentProjectId = projectId;
+    }
+
+    acting = false;
+  }
 });
 
 class MySingleProject extends connect(store)(PageViewElement) {
-  _render({project, _project}) {
-    if (!_project || !_project.exists) {
+  _render({project, releases}) {
+    if (!project || !project.exists) {
       return html`
         <my-view404></my-view404>
       `;
@@ -52,6 +77,11 @@ class MySingleProject extends connect(store)(PageViewElement) {
         .logo {
           text-align: center;
         }
+        .releases {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
       </style>
 
       <section>
@@ -62,52 +92,51 @@ class MySingleProject extends connect(store)(PageViewElement) {
         </nav>
         <header>
           <h2>
-            Is <em><a href="${_project.homepage}">${_project.name}</a></em> out yet?
+            Is <em><a href="${project.homepage}">${project.name}</a></em> out yet?
           </h2>
         </header>
       </section>
 
       <section>
         <article>
-          <push-notification-button project="${project}"></push-notification-button>
-          ${_project.logo && html`
+          <push-notification-button project="${project.slug}"></push-notification-button>
+          ${project.logo && html`
             <div class="logo">
-              <img src="${_project.logo}" alt="${_project.name} logo" />
+              <img src="${project.logo}" alt="${project.name} logo" />
             </div>
           `}
-          <p>${_project.description}</p>
-          <h3>Known releases</h3>
-          <ul class="list">
-            ${_project.releases && _project.releases.map(release => html`
-              <li>
-                <a href="/projects/${_project.slug}/${release.id}">
-                  ${_project.name} ${release.version} ${release.codename}
-                  ${release.islts && ' LTS '} ${release.beta}
-                </a>
-              </li>
-            `) || html`
-              <li>
-                There are no known releases for ${_project.name}
-              </li>
-            `}
-          </ul>
+          <p>${project.description}</p>
+          <div class="releases">
+            <h3>Known releases</h3>
+            <ul class="list">
+              ${releases && releases.map(release => html`
+                <li>
+                  <a href="/projects/${project.slug}/${release.id}">
+                    ${project.name} ${release.version} ${release.codename}
+                    ${release.islts ? 'LTS' : ''} ${release.beta}
+                  </a>
+                </li>
+              `) || html`
+                <li>
+                  There are no known releases for ${project.name}
+                </li>
+              `}
+            </ul>
+          </div>
         </article>
       </section>
     `
   }
 
   static get properties() { return {
-    project: String,
-    _project: Object
+    project: Object,
+    releases: Array,
   }}
 
   // This is called every time something is updated in the store.
   _stateChanged(state) {
-    if (this.project !== state.app.project) {
-      this.project = state.app.project
-      store.dispatch(getProject(state.app.project));
-    }
-    this._project = state.projects.project;
+    this.project  = state.projects.project;
+    this.releases = state.releases.releases;
   }
 }
 

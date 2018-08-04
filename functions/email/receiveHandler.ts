@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-// import * as formidable from 'formidable';
 import XRegExp from 'xregexp';
 import uuid from 'uuid/v4';
-// import webPush from 'web-push';
-import {admin, functions} from '../firebase';
-import { Project, Release, Email, ReleaseEmail, PushSubscription } from '../data/models';
+import {admin, functions, firestore} from '../firebase';
 import { abortEmail, acceptEmail } from './responders';
 import { Request, Response } from 'firebase-functions';
 
@@ -48,6 +45,9 @@ let FCM_PRIVATE_KEY = '';
 if (functions.config().webpush) {
   FCM_PRIVATE_KEY = functions.config().webpush.fcmprivatekey || '';
 }
+
+const projects = firestore.collection('projects');
+const emails = firestore.collection('emails');
 
 export const ReceiveHandler = (req: Request, res: Response) => {
   const transactionId = uuid();
@@ -82,60 +82,51 @@ export const ReceiveHandler = (req: Request, res: Response) => {
     timeparts[2],
   );
 
-  Project.findOne({
-    where: { toaddress: fields.headers['To'] },
-  }).then(project => {
-    const emailData = {
-      sentto: fields.headers['To'],
-      sentfrom: fields.headers['From'],
-      received: new Date(),
-      subject: fields.headers['Subject'],
-      body: fields.plain,
-    };
+  const emailUUID = uuid();
+  emails.doc(emailUUID).set({
+    sentto: fields.headers['To'],
+    sentfrom: fields.headers['From'],
+    received: new Date(),
+    subject: fields.headers['Subject'],
+    body: fields.plain,
+  })
+  .then(() => {
+    projects.where('toaddress', '==', fields.headers['To'])
+    .onSnapshot(snapshot => {
+      for (const doc of snapshot.docs) {
+        const project = doc.data();
+        const re = XRegExp(project['regex'], 'i');
+        if (re.test(fields.haders['Subject'] as string)) {
+          const matches = XRegExp.exec(fields.headers['Subject'] as string, re);
+  
+          const version = matches['version'] || '';
+          const tmpcode = matches['codename2'] || '';
+          const codename = matches['codename'] || tmpcode;
+          const islts = matches['lts'] && matches['lts'].indexOf('LTS') > -1;
+          const beta = matches['betatext'] || '';
+          const rc = matches['rctext'] || '';
+          const preRelInfo =  `${beta} ${rc}`.trim();
 
-    if (project) {
-      const re = XRegExp(project['regex'], 'i');
-      if (re.test(fields.haders['Subject'] as string)) {
-        const matches = XRegExp.exec(fields.headers['Subject'] as string, re);
+          const releaseUUID = uuid();
 
-        const version = matches['version'] || '';
-        const tmpcode = matches['codename2'] || '';
-        const codename = matches['codename'] || tmpcode;
-        const isLTS = matches['lts'] && matches['lts'].indexOf('LTS') > -1;
-        const beta = matches['betatext'] || '';
-        const rc = matches['rctext'] || '';
-        const preRelInfo =  `${beta} ${rc}`.trim();
-
-        return Release.create(
-          {
-            email: emailData,
+          return projects.doc(project.ref).collection('releases').doc(releaseUUID).set({
             date,
             version,
+            islts,
             codename,
-            islts: isLTS,
             beta: preRelInfo,
-          },
-          {
-            include: [
-              {
-                association: ReleaseEmail,
-              },
-            ],
-          },
-        ).then(release => {
-          if (release) {
-            project['addRelease'](release);
-
-            const projectName = `
+            email: emails.doc(emailUUID),
+          }).then(() => {
+            const name = `
               ${project['name']
               }${version && ` ${version}`
               }${codename && ` ${codename}`
-              }${isLTS && ' LTS'
+              }${islts && ' LTS'
               }${preRelInfo && ` ${preRelInfo}`
               }
             `.trim();
 
-            const body = `${projectName} has just been released!`;
+            const body = `${name} has just been released!`;
             const icon = project['logo'];
 
             admin.messaging().send({
@@ -153,7 +144,7 @@ export const ReceiveHandler = (req: Request, res: Response) => {
               // },
               webpush: {
                 notification: {
-                  clickAction: `https://isitoutyet.info/project/${project['slug']}/${release['id']}`,
+                  clickAction: `https://isitoutyet.info/project/${project['slug']}/${releaseUUID}`,
                   icon,
                 },
               },
@@ -161,23 +152,15 @@ export const ReceiveHandler = (req: Request, res: Response) => {
               console.log('Receive email: Successfully sent push message:', response);
             }).catch(e => {
               console.log('Receive email: Error sending push message:', e);
-            })
-          }
-        })
-        .then(acceptEmail(transactionId, res, fields))
-        .catch(e => {
-          console.log('Receive email: Error saving release:', e);
-          abortEmail(transactionId, res)(e);
-        });
+            });
+          });
+        }
       }
-    }
-
-    // if we get here then we didn't match a project for the email.
-    // let's save it anyway in case we get complaints about missing data
-    Email.create(emailData)
-    .then(acceptEmail(transactionId, res, fields));
-  }).catch(e => {
-    console.log(`Receive Email: Error encountered: `, e);
+    });
+  })
+  .then(acceptEmail(transactionId, res, fields))
+  .catch(e => {
+    console.log('Receive Email: Error encountered:', e);
     if (!res.headersSent) {
       abortEmail(transactionId, res)(e);
     }

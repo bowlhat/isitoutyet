@@ -25,39 +25,84 @@ store.addReducers({
   releases,
 });
 
+let currentProjectId = '';
+let currentReleaseId = '';
+
+let acting = false;
+
+store.subscribe(() => {
+  if (!acting) {
+    acting = true;
+
+    const state = store.getState();
+
+    const {projectId, releaseId} = state.app;
+    
+    if (projectId && currentProjectId !== projectId) {
+      console.log('Single release: Fetch new project:', projectId);
+      store.dispatch(getProject(projectId));
+      currentProjectId = projectId;
+    }
+
+    if (releaseId && currentReleaseId !== releaseId) {
+      console.log('Single release: Fetch new release:', projectId);
+      store.dispatch(getRelease(projectId, releaseId));
+      currentReleaseId = releaseId;
+    }
+
+    acting = false;
+  }
+});
+
 class MySingleRelease extends connect(store)(PageViewElement) {
-  _render({_project, _release}) {
-    if (!_project || !_release) {
+  _render({project, release}) {
+    if (!project || !release || !release.email) {
       return html`
         <my-view404></my-view404>
       `;
     }
-    const releaseDate = new Date(_release.date);
+    let releaseDate = 'Unknown',
+        releaseTime = 'Unknown';
+    if (release.date) {
+      const d = release.date.toDate();
+      releaseDate = d.toDateString();
+      releaseTime = d.toTimeString();
+    }
+    
+    let emailDate = 'Unknown',
+        emailTime = '';
+    
+    const email = release.email;
+    if (email.received) {
+      const d = email.received.toDate();
+      emailDate = d.toDateString();
+      emailTime = d.toTimeString();
+    }
 
     return html`
       ${SharedStyles}
       <section>
         <nav>
-          <a href="/projects/${_project.slug}">
-            &laquo; Back to ${_project.name}
+          <a href="/projects/${project.slug}">
+            &laquo; Back to ${project.name}
           </a>
         </nav>
         <header>
           <h2>
             Release information for
-            <a href="${_project.homepage}">${_project.name}</a> ${_release.version}
-            ${_release.islts && 'LTS'} ${_release.codename} ${_release.beta}
+            <a href="${project.homepage}">${project.name}</a> ${release.version}
+            ${release.islts ? 'LTS' : ''} ${release.codename} ${release.beta}
           </h2>
         </header>
       </section>
 
       <section>
         <article>
-          <p>Release date: ${releaseDate.toDateString()} ${releaseDate.toTimeString()}</p>
-          <p>Email received: ${_release.email.received || 'Unknown'}</p>
-          <p>Subject: ${_release.email.subject}</p>
+          <p>Release date: ${releaseDate} ${releaseTime}</p>
+          <p>Email received: ${emailDate} ${emailTime}</p>
+          <p>Subject: ${email ? email.subject : ''}</p>
           <pre>
-            ${_release.email.body}
+            ${email ? email.body : 'No announcement text available'}
           </pre>
         </article>
       </section>
@@ -65,24 +110,14 @@ class MySingleRelease extends connect(store)(PageViewElement) {
   }
 
   static get properties() { return {
-    _release: Object,
-    _project: Object,
-    project: String,
-    release: String,
+    release: Object,
+    project: Object,
   }}
 
   // This is called every time something is updated in the store.
   _stateChanged(state) {
-    if (this.project !== state.app.project) {
-      this.project = state.app.project;
-      store.dispatch(getProject(this.project));
-    }
-    if (this.release !== state.app.release) {
-      this.release = state.app.release;
-      store.dispatch(getRelease(this.project, this.release));
-    }
-    this._project = state.projects.project;
-    this._release = state.releases.releases.length > 0 && state.releases.releases.shift();
+    this.project = state.projects.project;
+    this.release = state.releases.release;
   }
 }
 

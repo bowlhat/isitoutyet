@@ -22,33 +22,51 @@ store.addReducers({
 });
 
 class MyProjects extends connect(store)(PageViewElement) {
-  _render({_projects}) {
+  _render({projects}) {
     return html`
       ${SharedStyles}
+      <style>
+        h2 {
+          font-size: 1.5rem;
+        }
+        section > article {
+          display: grid;
+          grid-gap: 1rem;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        div.project {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+        }
+      </style>
       <section>
-        ${_projects.map(project => {
-          return html`
-          <article>
-            <h2>
-              <a href="/projects/${project.slug}">${project.name}</a>
-            </h2>
-            ${project.logo && html`
-            <a href="/projects/${project.slug}">
-              <img
-                src="${project.logo}"
-                alt="${project.name} logo"
-              />
-            </a>
-            `}
-          </article>
-          `
-        })}
+        <article>
+          ${projects.map(project => {
+            return html`
+            <div class="project">
+              <h2>
+                <a href="/projects/${project.slug}">${project.name}</a>
+              </h2>
+              ${project.logo && html`
+              <a href="/projects/${project.slug}">
+                <img
+                  src="${project.logo}"
+                  alt="${project.name} logo"
+                />
+              </a>
+              `}
+            </div>
+            `
+          })}
+        </article>
       </section>
     `
   }
 
   static get properties() { return {
-    _projects: Array
+    projects: Array
   }}
 
   _firstRendered() {
@@ -57,7 +75,7 @@ class MyProjects extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   _stateChanged(state) {
-    this._projects = state.projects.projects;
+    this.projects = state.projects.projects;
   }
 }
 

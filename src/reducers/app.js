@@ -28,12 +28,12 @@ const app = (state = {drawerOpened: false}, action) => {
     case UPDATE_PROJECT:
       return {
         ...state,
-        project: action.project
+        projectId: action.projectId
       };
     case UPDATE_RELEASE:
       return {
         ...state,
-        release: action.release
+        releaseId: action.releaseId
       };
     case UPDATE_OFFLINE:
       return {

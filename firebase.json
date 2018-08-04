@@ -15,18 +15,6 @@
         ],
         "rewrites": [
             {
-                "source": "/api/graphql",
-                "function": "graphQLHandler"
-            },
-            {
-                "source": "/api/vapidPublicKey",
-                "function": "WebPushHandler"
-            },
-            {
-                "source": "/api/project/**",
-                "function": "WebPushHandler"
-            },
-            {
                 "source": "/api/talkies/dialogflow",
                 "function": "DialogflowHandler"
             },

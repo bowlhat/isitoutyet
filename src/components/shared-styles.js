@@ -23,7 +23,7 @@ export const SharedStyles = html`
   }
 
   section > * {
-    max-width: 600px;
+    max-width: 800px;
     margin-right: auto;
     margin-left: auto;
   }
@@ -42,6 +42,10 @@ export const SharedStyles = html`
     h2 {
       font-size: 36px;
     }
+  }
+
+  img {
+    max-width: 100%;
   }
 
   pre {

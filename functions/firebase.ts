@@ -3,4 +3,6 @@ import * as functions from 'firebase-functions';
 
 admin.initializeApp(functions.config().firebase);
 
-export {admin, functions};
+const firestore = admin.firestore();
+
+export {admin, functions, firestore};

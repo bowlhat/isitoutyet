@@ -5,12 +5,12 @@ const projects = (state = {projects: []}, action) => {
         case GET_ALL_PROJECTS:
             return {
                 ...state,
-                projects: action.projects
+                projects: action.projects,
             };
         case GET_PROJECT:
             return {
                 ...state,
-                project: action.project
+                project: action.project,
             };
         default:
             return state;

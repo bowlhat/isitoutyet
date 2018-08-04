@@ -1,23 +1,34 @@
-import GraphClient from '../data/graphql';
-import {queries} from '../data/queries';
+// import GraphClient from '../data/graphql';
+// import {queries} from '../data/queries';
 
-const graphQLOptions = {
-    url: '/api/graphql',
-};
-const client = new GraphClient(graphQLOptions);
+// const graphQLOptions = {
+//     url: '/api/graphql',
+// };
+// const client = new GraphClient(graphQLOptions);
+
+import {firestore} from '../firebase';
 
 export const GET_ALL_PROJECTS = 'GET_ALL_PROJECTS';
 export const GET_PROJECT = 'GET_PROJECT';
 
 export const getAllProjects = () => (dispatch, getState) => {
-    client.get(queries.AllProjects)
-    .then(data => {
+    firestore
+        .collection('/projects')
+        .get()
+    .then(snapshot => {
         dispatch({
             type: GET_ALL_PROJECTS,
-            projects: data.projects
+            projects: snapshot.docs.map(doc => {
+                return {
+                    name: doc.get('name'),
+                    logo: doc.get('logo'),
+                    slug: doc.id,
+                }
+            })
         });
     })
-    .catch(() => {
+    .catch(e => {
+        console.log('Error fetching all projects:', e);
         dispatch({
             type: GET_ALL_PROJECTS,
             projects: getState().projects || []
@@ -25,17 +36,22 @@ export const getAllProjects = () => (dispatch, getState) => {
     });
 }
 
-export const getProject = (projectSlug) => (dispatch, getState) => {
-    client.get(queries.Project, { slug: projectSlug })
-    .then(data => {
+export const getProject = (projectId) => (dispatch, getState) => {
+    firestore
+        .collection('/projects')
+        .doc(projectId)
+        .get()
+    .then(snapshot => {
         dispatch({
             type: GET_PROJECT,
             project: {
-                ...data.project,
+                ...snapshot.data(),
+                slug: snapshot.id,
                 exists: true
             }
         });
-    }).catch(() => {
+    }).catch(e => {
+        console.log('Error fetching a project:', e);
         dispatch({
             type: GET_PROJECT,
             project: { exists: false }

@@ -103,17 +103,17 @@ const updatePage = (page) => {
   };
 }
 
-const updateProject = (project) => {
+const updateProject = (projectId) => {
   return {
     type: UPDATE_PROJECT,
-    project
+    projectId
   };
 }
 
-const updateRelease = (release) => {
+const updateRelease = (releaseId) => {
   return {
     type: UPDATE_RELEASE,
-    release
+    releaseId
   };
 }
 
