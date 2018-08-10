@@ -5,6 +5,13 @@ import * as rendertron from 'rendertron-middleware';
 
 const app = express();
 
+app.use((req, res, next) => {
+  if (req.secure) {
+    res.header('strict-transport-security', 'max-age=31556926');
+  }
+  next();
+});
+
 app.use(rendertron.makeMiddleware({
   proxyUrl: 'https://render-tron.appspot.com/render',
   injectShadyDom: true,

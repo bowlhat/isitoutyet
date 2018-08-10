@@ -101,6 +101,12 @@ class MySingleRelease extends connect(store)(PageViewElement) {
           <p>Release date: ${releaseDate} ${releaseTime}</p>
           <p>Email received: ${emailDate} ${emailTime}</p>
           <p>Subject: ${email ? email.subject : ''}</p>
+          <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-8255474170399666"
+            data-ad-slot="9663987201"></ins>
           <pre>
             ${email ? email.body : 'No announcement text available'}
           </pre>

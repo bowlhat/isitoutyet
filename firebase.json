@@ -11,6 +11,26 @@
                 "source": "/images/:path*",
                 "destination": "/esm-bundled/images/:path*",
                 "type": 301
+            },
+            {
+                "source": "/browserconfig.xml",
+                "destination": "/esm-bundled/browserconfig.xml",
+                "type": 301
+            },
+            {
+                "source": "/crossdomain.xml",
+                "destination": "/esm-bundled/crossdomain.xml",
+                "type": 301
+            },
+            {
+                "source": "/favicon.ico",
+                "destination": "/esm-bundled/images/favicon.ico",
+                "type": 301
+            },
+            {
+                "source": "/manifest.webmanifest",
+                "destination": "/esm-bundled/manifest.webmanifest",
+                "type": 301
             }
         ],
         "rewrites": [
@@ -39,7 +59,7 @@
                 "destination": "/esm-bundled/firebase-messaging-sw.js"
             },
             {
-                "source": "**",
+                "source": "!(/images/**|/es?-bundled/**|/favicon.ico|/browserconfig.xml|/crossdomain.xml|/manifest.webmanifest)",
                 "function": "PrplHandler"
             }
         ],
@@ -67,6 +87,37 @@
                     {
                         "key": "Cache-Control",
                         "value": "no-cache"
+                    }
+                ]
+            },
+            {
+                "source": "**/*.js",
+                "headers": [
+                    {
+                        "key": "x-content-type-options",
+                        "value": "nosniff"
+                    },
+                    {
+                        "key": "Content-type",
+                        "value": "text/javascript; charset=utf-8"
+                    }
+                ]
+            },
+            {
+                "source": "**/*.css",
+                "headers": [
+                    {
+                        "key": "x-content-type-options",
+                        "value": "nosniff"
+                    }
+                ]
+            },
+            {
+                "source": "**/*.ico",
+                "headers": [
+                    {
+                        "key": "Content-type",
+                        "value": "image/x-icon"
                     }
                 ]
             }

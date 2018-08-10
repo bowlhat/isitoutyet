@@ -108,13 +108,11 @@ class PushNotificationButton extends LitElement {
             this.buttonText = unavailNotifyText;
         })
         .then(() => {
-            this.buttonText = stopNotifyText;
             this.subscribed = true;
             localStorage.setItem(this.project, 'subscribed');
         })
         .catch(e => {
             console.log('Error subscribing push notifications:', e);
-            this.buttonText = errorMsg;
         });
     }
   

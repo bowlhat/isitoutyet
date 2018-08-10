@@ -4,6 +4,7 @@ import { admin } from '../firebase';
 import { Project } from '../data/models';
 
 export const RegisterPushNotification = (req: Request, res: Response) => {
+  console.log(req.body.token);
   const { token } = req.body;
   if (!token) {
     console.error('Register Push: No token provided by client');

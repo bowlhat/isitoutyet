@@ -5,10 +5,12 @@
     "images/**/*"
   ],
   "extraDependencies": [
-    "manifest.json",
+    "manifest.webmanifest",
     "node_modules/@webcomponents/webcomponentsjs/**",
     "push-manifest.json",
-    "firebase-messaging-sw.js"
+    "firebase-messaging-sw.js",
+    "browserconfig.xml",
+    "crossdomain.xml"
   ],
   "builds": [
     {

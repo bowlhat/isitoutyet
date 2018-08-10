@@ -106,6 +106,12 @@ class MySingleProject extends connect(store)(PageViewElement) {
             </div>
           `}
           <p>${project.description}</p>
+          <ins class="adsbygoogle"
+            style="display:block; text-align:center;"
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-8255474170399666"
+            data-ad-slot="7713854559"></ins>
           <div class="releases">
             <h3>Known releases</h3>
             <ul class="list">
