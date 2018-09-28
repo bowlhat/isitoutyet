@@ -19,6 +19,7 @@ import uuid from 'uuid/v4';
 import {admin, functions, firestore} from '../firebase';
 import { abortEmail, acceptEmail } from './responders';
 import { Request, Response } from 'firebase-functions';
+import { Fields } from './Fields';
 
 const months = [
   'Jan',
@@ -35,6 +36,8 @@ const months = [
   'Dec',
 ];
 
+const noHeaders = 'No eMail Headers present message';
+
 let EMAIL_BASIC_AUTH = '';
 if (functions.config().emailhandler) {
   EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
@@ -49,55 +52,69 @@ if (functions.config().webpush) {
 const projects = firestore.collection('projects');
 const emails = firestore.collection('emails');
 
-export const ReceiveHandler = (req: Request, res: Response) => {
+export const ReceiveHandler = (request: Request, response: Response) => {
   const transactionId = uuid();
 
-  const match = CREDENTIALS_REGEXP.exec(req.headers.authorization || '');
+  const match = CREDENTIALS_REGEXP.exec(request.headers.authorization || '');
   if (EMAIL_BASIC_AUTH && (!match || match[1] !== EMAIL_BASIC_AUTH)) {
-    return abortEmail(transactionId, res)('Incorrect credentials');
+    return abortEmail(transactionId, response)('Incorrect credentials');
   }
   
-  const fields = req.body;
-  const dateparts = (fields.headers['Date'] as string).split(' ');
-  const timeparts = dateparts[4].split(':').map(part => parseInt(part, 10));
+  const fields: Fields = request.body;
 
-  if (dateparts[5]) {
-    const offsetDirection = dateparts[5].substr(0, 1);
-    let offsetHours = parseInt(dateparts[5].substr(1, 2), 10);
-    let offsetMinutes = parseInt(dateparts[5].substr(3, 2), 10);
-    if (offsetDirection === '+') {
-      offsetHours = -offsetHours;
-      offsetMinutes = -offsetMinutes;
-    }
-    timeparts[0] += offsetHours;
-    timeparts[1] += offsetMinutes;
+  if (!fields.headers) {
+    return abortEmail(transactionId, response)(noHeaders);
   }
 
-  const date = new Date(
-    parseInt(dateparts[3], 10),
-    months.indexOf(dateparts[2]),
-    parseInt(dateparts[1], 10),
-    timeparts[0],
-    timeparts[1],
-    timeparts[2],
-  );
+  let date: Date = new Date();
+  if (fields.headers.Date) {
+    const dateparts = (fields.headers.Date).split(' ');
+    const timeparts = dateparts[4].split(':').map(part => parseInt(part, 10));
+
+    if (dateparts[5]) {
+      const offsetDirection = dateparts[5].substr(0, 1);
+      let offsetHours = parseInt(dateparts[5].substr(1, 2), 10);
+      let offsetMinutes = parseInt(dateparts[5].substr(3, 2), 10);
+      if (offsetDirection === '+') {
+        offsetHours = -offsetHours;
+        offsetMinutes = -offsetMinutes;
+      }
+      timeparts[0] += offsetHours;
+      timeparts[1] += offsetMinutes;
+    }
+
+    date = new Date(
+      parseInt(dateparts[3], 10),
+      months.indexOf(dateparts[2]),
+      parseInt(dateparts[1], 10),
+      timeparts[0],
+      timeparts[1],
+      timeparts[2],
+    );
+  }
 
   const emailUUID = uuid();
   emails.doc(emailUUID).set({
-    sentto: fields.headers['To'],
-    sentfrom: fields.headers['From'],
+    sentto: fields.headers.To || '',
+    sentfrom: fields.headers.From || '',
     received: new Date(),
-    subject: fields.headers['Subject'],
-    body: fields.plain,
+    subject: fields.headers.Subject || '',
+    body: fields.plain || '',
   })
   .then(() => {
-    projects.where('toaddress', '==', fields.headers['To'])
+    if (!fields.headers) {
+      return abortEmail(transactionId, response)(noHeaders);
+    }
+    projects.where('toaddress', '==', fields.headers.To)
     .onSnapshot(snapshot => {
+      if (!fields.headers) {
+        return abortEmail(transactionId, response)(noHeaders);
+      }
       for (const doc of snapshot.docs) {
         const project = doc.data();
         const re = XRegExp(project['regex'], 'i');
-        if (re.test(fields.headers['Subject'] as string)) {
-          const matches = XRegExp.exec(fields.headers['Subject'] as string, re);
+        if (fields.headers.Subject && re.test(fields.headers.Subject)) {
+          const matches = XRegExp.exec(fields.headers.Subject, re);
   
           const version = matches['version'] || '';
           const tmpcode = matches['codename2'] || '';
@@ -117,15 +134,7 @@ export const ReceiveHandler = (req: Request, res: Response) => {
             beta: preRelInfo,
             email: emails.doc(emailUUID),
           }).then(() => {
-            const name = `
-              ${project['name']
-              }${version && ` ${version}`
-              }${codename && ` ${codename}`
-              }${islts && ' LTS'
-              }${preRelInfo && ` ${preRelInfo}`
-              }
-            `.trim();
-
+            const name = `${project['name']}${version && ` ${version}`}${codename && ` ${codename}`}${islts && ' LTS'}${preRelInfo && ` ${preRelInfo}`}`.trim();
             const body = `${name} has just been released!`;
             const icon = project['logo'];
 
@@ -158,11 +167,11 @@ export const ReceiveHandler = (req: Request, res: Response) => {
       }
     });
   })
-  .then(acceptEmail(transactionId, res, fields))
+  .then(acceptEmail(transactionId, response, fields))
   .catch(e => {
     console.log('Receive Email: Error encountered:', e);
-    if (!res.headersSent) {
-      abortEmail(transactionId, res)(e);
+    if (!response.headersSent) {
+      abortEmail(transactionId, response)(e);
     }
   });
 };

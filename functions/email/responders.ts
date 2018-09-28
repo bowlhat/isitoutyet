@@ -26,11 +26,20 @@ const extractFields = (fields: Fields) => {
 
   const subjectUndef = '[Subject not defined]';
 
-  to = fields.to || fields['headers[To]'] || fields['envelope[to]'] || '';
-  from =
-    fields.from || fields['headers[From]'] || fields['envelope[from]'] || '';
-  subject = fields['headers[Subject]'] || subjectUndef;
-  spf = (fields.spf && fields.spf.result) || fields['spf[result]'] || '';
+  if (fields.headers) {
+    to = fields.headers.To || '';
+    from = fields.headers.From || '';
+    subject = fields.headers.Subject || '';
+  } else {
+    to = fields.to || fields['headers[To]'] || fields['envelope[to]'] || '';
+    from = fields.from || fields['headers[From]'] || fields['envelope[from]'] || '';
+    subject = fields['headers[Subject]'] || subjectUndef;
+  }
+  if (fields.spf) {
+    spf = fields.spf.result || '';
+  } else {
+    spf = fields['spf[result]'] || '';
+  }
 
   return { to, from, subject, spf };
 };
