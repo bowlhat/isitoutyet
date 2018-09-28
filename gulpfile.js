@@ -59,5 +59,5 @@ gulp.task('firebase', () => {
           .pipe(gulp.dest('functions'))
           .on('end', resolve)))
     // Delete them from the original build
-    .then(() => del(filesToMove));
+    // .then(() => del(filesToMove));
 });

@@ -85,7 +85,8 @@ class MyTerms extends PageViewElement {
         <h3>Contact</h3>
         <p>
           Do you have questions or concerns about our service or your privacy? Please
-          contact us via email to [support@bowlhat.net](mailto:support@bowlhat.net).
+          contact us via email to
+          <a href="mailto:support+privacy@bowlhat.net">support+privacy@bowlhat.net</a>.
         </p>
       </section>
     `;

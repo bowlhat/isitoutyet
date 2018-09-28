@@ -163,13 +163,22 @@ class MyApp extends connect(store)(LitElement) {
 
       footer {
         padding: 24px;
-        background: var(--app-drawer-background-color);
-        color: var(--app-drawer-text-color);
+        background: var(--app-section-odd-color);
+        color: var(--app-dark-text-color);
         text-align: center;
       }
 
       footer a {
-        color: var(--app-drawer-text-color);
+        color: var(--app-dark-text-color);
+      }
+
+      .copyright-logo {
+        background: url(https://bowlhat.net/wp-content/themes/bowlhat-freelance/images/logo.svg) center center no-repeat;
+        background-size: 80px 48px;
+        width: 190px;
+        height: 50px;
+        margin: 35px auto;
+        text-indent: -9999px;
       }
 
       /* Wide layout: when the viewport width is bigger than 460px, layout
@@ -238,15 +247,15 @@ class MyApp extends connect(store)(LitElement) {
     <footer>
       <div>
         <p>
+          <a href="/">Home</a>
+          <span>|</span>
+          <a href="/privacy">Privacy</a>
+          <span>|</span>
+          <a href="/terms">Terms</a>
+          <span>|</span>
           <span>© Daniel Llewellyn T/A Bowl Hat</span>
         </p>
-        <p>
-          <a href="/">Home</a>
-          <span>·</span>
-          <a href="/privacy">Privacy</a>
-          <span>·</span>
-          <a href="/terms">Terms</a>
-        </p>
+        <p class="copyright-logo">Bowl Hat</p>
       </div>
     </footer>
 
