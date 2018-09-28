@@ -2,7 +2,6 @@ import {WebhookClient, Card, Suggestion, Text} from 'dialogflow-fulfillment';
 import * as functions from 'firebase-functions';
 
 import { versionForProject } from './common';
-import { TextDecoder } from 'util';
 
 let DIALOGFLOW_BASIC_AUTH = '';
 if (functions.config().dialogflow) {
