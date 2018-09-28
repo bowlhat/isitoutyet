@@ -96,7 +96,7 @@ export const ReceiveHandler = (req: Request, res: Response) => {
       for (const doc of snapshot.docs) {
         const project = doc.data();
         const re = XRegExp(project['regex'], 'i');
-        if (re.test(fields.haders['Subject'] as string)) {
+        if (re.test(fields.headers['Subject'] as string)) {
           const matches = XRegExp.exec(fields.headers['Subject'] as string, re);
   
           const version = matches['version'] || '';
