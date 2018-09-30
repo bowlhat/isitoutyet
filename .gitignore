@@ -8,3 +8,5 @@ functions/**/*.js
 test/integration/screenshots-current
 yarn.lock
 .DS_Store
+
+*.js.map

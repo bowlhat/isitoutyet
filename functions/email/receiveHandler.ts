@@ -94,7 +94,8 @@ export const ReceiveHandler = (request: Request, response: Response) => {
   }
 
   const emailUUID = uuid();
-  emails.doc(emailUUID).set({
+  const email = emails.doc(emailUUID)
+  return email.set({
     sentto: fields.headers.To || '',
     sentfrom: fields.headers.From || '',
     received: new Date(),
@@ -103,12 +104,12 @@ export const ReceiveHandler = (request: Request, response: Response) => {
   })
   .then(() => {
     if (!fields.headers) {
-      return abortEmail(transactionId, response)(noHeaders);
+      throw noHeaders;
     }
-    projects.where('toaddress', '==', fields.headers.To)
+    return projects.where('toaddress', '==', fields.headers.To)
     .onSnapshot(snapshot => {
       if (!fields.headers) {
-        return abortEmail(transactionId, response)(noHeaders);
+        throw noHeaders;
       }
       for (const doc of snapshot.docs) {
         const project = doc.data();
@@ -119,27 +120,29 @@ export const ReceiveHandler = (request: Request, response: Response) => {
           const version = matches['version'] || '';
           const tmpcode = matches['codename2'] || '';
           const codename = matches['codename'] || tmpcode;
-          const islts = matches['lts'] && matches['lts'].indexOf('LTS') > -1;
+          const islts: Boolean = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
           const beta = matches['betatext'] || '';
           const rc = matches['rctext'] || '';
           const preRelInfo =  `${beta} ${rc}`.trim();
 
           const releaseUUID = uuid();
 
-          return projects.doc(project.ref).collection('releases').doc(releaseUUID).set({
+          const releases = doc.ref.collection('releases');
+
+          return releases.doc(releaseUUID).set({
             date,
             version,
             islts,
             codename,
             beta: preRelInfo,
-            email: emails.doc(emailUUID),
+            email: email,
           }).then(() => {
             const name = `${project['name']}${version && ` ${version}`}${codename && ` ${codename}`}${islts && ' LTS'}${preRelInfo && ` ${preRelInfo}`}`.trim();
             const body = `${name} has just been released!`;
             const icon = project['logo'];
 
-            admin.messaging().send({
-              topic: project['slug'],
+            return admin.messaging().send({
+              topic: doc.id,
               notification: {
                 title: 'Is it out yet? Yes it is!',
                 body,
