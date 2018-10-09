@@ -1,12 +1,12 @@
 build/
-functions/build
 
 node_modules/
-functions/node_modules/
-functions/**/*.js
-
-test/integration/screenshots-current
-yarn.lock
+test/integration/screenshots-current/
+_site/
 .DS_Store
 
 *.js.map
+
+functions/build
+functions/node_modules/
+functions/**/*.js

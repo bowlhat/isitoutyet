@@ -14,9 +14,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="generator" content="PWA Starter Kit">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Is it out yet?">
 
-    <title>My app</title>
-    <meta name="description" content="My App description">
+    <title>Is it out yet?</title>
 
     <!--
       The `<base>` tag below is present to support two advanced deployment options:
@@ -62,6 +62,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta property="og:site_name" content="Is it out yet?">
     <meta property="og:image" content="images/manifest/misc/mstile-144x144.png" />
 
+    <!-- Performance tip: hint to the browser to start the handshake for the fonts site -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <script>
       // Load and register pre-caching Service Worker
       if ('serviceWorker' in navigator) {
@@ -84,6 +86,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-style: normal;
         font-weight: 400;
         src: local('Pacifico Regular'), local('Pacifico-Regular'), url(https://fonts.gstatic.com/s/pacifico/v12/Q_Z9mv4hySLTMoMjnk_rCXYhjbSpvc47ee6xR_80Hnw.woff2) format('woff2');
+        /* THe browser draws the text immediately in the fallback font if the font
+           isn't loaded, then swaps it with the webfont when it eventually loads
+           See: https://developers.google.com/web/updates/2016/02/font-display
+        */
+        font-display: swap;
       }
       body {
         margin: 0;

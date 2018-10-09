@@ -23,8 +23,7 @@ import { store } from '../store.js';
 import {
   navigate,
   updateOffline,
-  updateDrawerState,
-  updateLayout
+  updateDrawerState
 } from '../actions/app.js';
 
 // These are the elements needed by this element.
@@ -40,7 +39,8 @@ import './snack-bar.js';
 import '../push-notifications.js';
 
 class MyApp extends connect(store)(LitElement) {
-  _render({appTitle, _page, _project, _drawerOpened, _snackbarOpened, _offline}) {
+  render() {
+    const {appTitle, _page, _drawerOpened, _snackbarOpened, _offline} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     <style>
@@ -148,6 +148,11 @@ class MyApp extends connect(store)(LitElement) {
         color: var(--app-drawer-selected-color);
       }
 
+      /* Workaround for IE11 displaying <main> as inline */
+      main {
+        display: block;
+      }
+
       .main-content {
         padding-top: 244px;
         min-height: 100vh;
@@ -211,7 +216,7 @@ class MyApp extends connect(store)(LitElement) {
     <!-- Header -->
     <app-header condenses reveals effects="waterfall blend-background parallax-background">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
+        <button class="menu-btn" title="Menu" @click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
         <div main-title>${appTitle}</div>
       </app-toolbar>
 
@@ -223,25 +228,25 @@ class MyApp extends connect(store)(LitElement) {
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${_drawerOpened}"
-        on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+    <app-drawer .opened="${_drawerOpened}"
+        @opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
       <nav class="drawer-list">
-        <a selected?="${_page === 'about'}" href="/about">About Us</a>
-        <a selected?="${_page === 'projects'}" href="/projects">Projects</a>
-        <a selected?="${_page === 'privacy'}" href="/privacy">Privacy Information</a>
-        <a selected?="${_page === 'terms'}" href="/terms">Terms of Service</a>
+        <a ?selected="${_page === 'about'}" href="/about">About Us</a>
+        <a ?selected="${_page === 'projects'}" href="/projects">Projects</a>
+        <a ?selected="${_page === 'privacy'}" href="/privacy">Privacy Information</a>
+        <a ?selected="${_page === 'terms'}" href="/terms">Terms of Service</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main class="main-content">
-      <my-about class="page" active?="${_page === 'about'}"></my-about>
-      <my-privacy class="page" active?="${_page === 'privacy'}"></my-privacy>
-      <my-terms class="page" active?="${_page === 'terms'}"></my-terms>
-      <my-projects class="page" active?="${_page === 'projects'}"></my-projects>
-      <my-single-project class="page" active?="${_page === 'single-project'}"></my-single-project>
-      <my-single-release class="page" active?="${_page === 'single-release'}"></my-single-release>
-      <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
+      <my-about class="page" ?active="${_page === 'about'}"></my-about>
+      <my-privacy class="page" ?active="${_page === 'privacy'}"></my-privacy>
+      <my-terms class="page" ?active="${_page === 'terms'}"></my-terms>
+      <my-projects class="page" ?active="${_page === 'projects'}"></my-projects>
+      <my-single-project class="page" ?active="${_page === 'single-project'}"></my-single-project>
+      <my-single-release class="page" ?active="${_page === 'single-release'}"></my-single-release>
+      <my-view404 class="page" ?active="${_page === 'view404'}"></my-view404>
     </main>
 
     <footer>
@@ -259,43 +264,43 @@ class MyApp extends connect(store)(LitElement) {
       </div>
     </footer>
 
-    <snack-bar active?="${_snackbarOpened}">
+    <snack-bar ?active="${_snackbarOpened}">
         You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
     `;
   }
 
   static get properties() {
     return {
-      appTitle: String,
-      _page: String,
-      _project: String,
-      _drawerOpened: Boolean,
-      _snackbarOpened: Boolean,
-      _offline: Boolean
+      appTitle: { type: String },
+      _page: { type: String },
+      _project: { type: String },
+      _drawerOpened: { type: Boolean },
+      _snackbarOpened: { type: Boolean },
+      _offline: { type: Boolean }
     }
   }
 
   constructor() {
     super();
     // To force all event listeners for gestures to be passive.
-    // See https://www.polymer-project.org/2.0/docs/devguide/gesture-events#use-passive-gesture-listeners
+    // See https://www.polymer-project.org/3.0/docs/devguide/settings#setting-passive-touch-gestures
     setPassiveTouchGestures(true);
   }
 
-  _firstRendered() {
-    installRouter((location) => store.dispatch(navigate(window.decodeURIComponent(location.pathname))));
+  firstUpdated() {
+    installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 460px)`,
-        (matches) => store.dispatch(updateLayout(matches)));
+        () => store.dispatch(updateDrawerState(false)));
   }
 
-  _didRender(properties, changeList) {
-    if ('_page' in changeList) {
-      const pageTitle = properties.appTitle + ' - ' + changeList._page;
+  updated(changedProps) {
+    if (changedProps.has('_page')) {
+      const pageTitle = this.appTitle + ' - ' + this._page;
       updateMetadata({
-          title: pageTitle,
-          description: pageTitle
-          // This object also takes an image property, that points to an img src.
+        title: pageTitle,
+        description: pageTitle
+        // This object also takes an image property, that points to an img src.
       });
     }
   }

@@ -31,30 +31,42 @@ import './shop-cart.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles.js';
 import { ButtonSharedStyles } from './button-shared-styles.js';
+import { addToCartIcon } from './my-icons.js';
 
 class MyView3 extends connect(store)(PageViewElement) {
-  _render({_quantity, _error}) {
+  render() {
+    const {_quantity, _error} = this;
     return html`
       ${SharedStyles}
       ${ButtonSharedStyles}
       <style>
-        /* Add more specificity (.checkout) to workaround an issue in lit-element:
-           https://github.com/PolymerLabs/lit-element/issues/34 */
-        button.checkout {
+        button {
           border: 2px solid var(--app-dark-text-color);
           border-radius: 3px;
           padding: 8px 16px;
         }
-        button.checkout:hover {
+        button:hover {
           border-color: var(--app-primary-color);
           color: var(--app-primary-color);
+        }
+        .cart, .cart svg {
+          fill: var(--app-primary-color);
+          width: 64px;
+          height: 64px;
+        }
+        .circle.small {
+          margin-top: -72px;
+          width: 28px;
+          height: 28px;
+          font-size: 16px;
+          font-weight: bold;
+          line-height: 30px;
         }
       </style>
 
       <section>
         <h2>Redux example: shopping cart</h2>
-        <div class="circle">${_quantity}</div>
-
+        <div class="cart">${addToCartIcon}<div class="circle small">${_quantity}</div></div>
         <p>This is a slightly more advanced Redux example, that simulates a
           shopping cart: getting the products, adding/removing items to the
           cart, and a checkout action, that can sometimes randomly fail (to
@@ -73,8 +85,8 @@ class MyView3 extends connect(store)(PageViewElement) {
         <div>${_error}</div>
         <br>
         <p>
-          <button class="checkout" hidden="${_quantity == 0}"
-              on-click="${() => store.dispatch(checkout())}">
+          <button ?hidden="${_quantity == 0}"
+              @click="${() => store.dispatch(checkout())}">
             Checkout
           </button>
         </p>
@@ -84,8 +96,8 @@ class MyView3 extends connect(store)(PageViewElement) {
 
   static get properties() { return {
     // This is the data from the store.
-    _quantity: Number,
-    _error: String
+    _quantity: { type: Number },
+    _error: { type: String },
   }}
 
   // This is called every time something is updated in the store.
