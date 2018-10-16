@@ -2,13 +2,7 @@ import { LitElement, html } from '@polymer/lit-element';
 // import "@material/mwc-button/mwc-button.js";
 
 import { ButtonSharedStyles } from './button-shared-styles';
-import GraphClient from '../data/graphql';
 import {messaging} from '../push-notifications';
-
-const graphQLOptions = {
-    url: '/api/graphql',
-};
-const client = new GraphClient(graphQLOptions);
 
 const unavailNotifyText = 'Notifcations unavailable';
 const notifyText        = 'Notify me!';
@@ -41,7 +35,9 @@ function storageAvailable(type) {
 const localStorageActive = storageAvailable('localStorage');
 
 class PushNotificationButton extends LitElement {
-    _render({disabled, subscribed, twoButtonMode}) {
+    render() {
+        const {disabled, subscribed, twoButtonMode} = this;
+
         return html`
             <style>
                 :host {
@@ -51,23 +47,25 @@ class PushNotificationButton extends LitElement {
             </style>
             ${ButtonSharedStyles}
             ${(twoButtonMode === true) ? html`
-                <button on-click="${e => this.subscribe(e)}" disabled?="${disabled}">${notifyText}</button>
-                <button on-click="${e => this.unsubscribe(e)}" disabled?="${disabled}">${stopNotifyText}</button>
+                <button @click="${this.subscribe.bind(this)}" ?disabled="${disabled}">${notifyText}</button>
+                <button @click="${this.unsubscribe.bind(this)}" ?disabled="${disabled}">${stopNotifyText}</button>
             ` : html`
-                <button on-click="${e => this.clickHandler(e)}" disabled?="${disabled}">${subscribed ? stopNotifyText : notifyText}</button>            
+                <button @click="${this.clickHandler.bind(this)}" ?disabled="${disabled}">${subscribed ? stopNotifyText : notifyText}</button>            
             `}
         `;
     }
   
-    static get properties() { return {
-        disabled: Boolean,
-        subscribed: Boolean,
-        twoButtonMode: Boolean,
-        project: {
-            type: String,
-            observer: '_projectChanged'
-        }
-    }};
+    static get properties() {
+        return {
+            disabled: Boolean,
+            subscribed: Boolean,
+            twoButtonMode: Boolean,
+            project: {
+                type: String,
+                observer: '_projectChanged'
+            }
+        };
+    }
   
     constructor() {
         super();
@@ -80,15 +78,11 @@ class PushNotificationButton extends LitElement {
         }
     }
 
-    _propertiesChanged(props, changedProps, prevProps) {
+    update(changedProps) {
         if ('project' in changedProps) {
-            if (localStorageActive) {
-                props.subscribed = changedProps.subscribed = (
-                    'subscribed' === localStorage.getItem(props.project));
-            }
+            this.subscribed = !!('subscribed' === localStorage.getItem(changedProps.project))
         }
-
-        super._propertiesChanged(props, changedProps, prevProps);
+        super.update(changedProps);
     }
   
     subscribe() {

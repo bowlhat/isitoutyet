@@ -22,7 +22,9 @@ store.addReducers({
 });
 
 class MyProjects extends connect(store)(PageViewElement) {
-  _render({projects}) {
+  render() {
+    const {projects} = this;
+
     return html`
       ${SharedStyles}
       <style>
@@ -65,11 +67,14 @@ class MyProjects extends connect(store)(PageViewElement) {
     `
   }
 
-  static get properties() { return {
-    projects: Array
-  }}
+  static get properties() {
+    return {
+      projects: Array
+    }
+  }
 
-  _firstRendered() {
+  constructor() {
+    super();
     store.dispatch(getAllProjects());
   }
 

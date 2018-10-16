@@ -49,7 +49,9 @@ store.subscribe(() => {
 });
 
 class MySingleProject extends connect(store)(PageViewElement) {
-  _render({project, releases}) {
+  render() {
+    const {project, releases} = this;
+    
     if (!project || !project.exists) {
       return html`
         <my-view404></my-view404>

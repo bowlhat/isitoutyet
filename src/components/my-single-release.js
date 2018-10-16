@@ -55,7 +55,9 @@ store.subscribe(() => {
 });
 
 class MySingleRelease extends connect(store)(PageViewElement) {
-  _render({project, release}) {
+  render() {
+    const {project, release} = this;
+    
     if (!project || !release || !release.email) {
       return html`
         <my-view404></my-view404>
@@ -115,10 +117,12 @@ class MySingleRelease extends connect(store)(PageViewElement) {
     `
   }
 
-  static get properties() { return {
-    release: Object,
-    project: Object,
-  }}
+  static get properties() {
+    return {
+      release: Object,
+      project: Object,
+    }
+  }
 
   // This is called every time something is updated in the store.
   _stateChanged(state) {

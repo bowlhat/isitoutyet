@@ -15,12 +15,10 @@ export const ButtonSharedStyles = html`
   button {
     font-size: inherit;
     vertical-align: middle;
-    background: transparent;
     border: none;
     cursor: pointer;
-  }
-  button:hover svg {
-    fill: var(--app-primary-color);
+    padding: 0.6em 1.2em 0.4em;
+    margin: 1.2em 0;
   }
 </style>
 `;
