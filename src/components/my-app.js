@@ -222,8 +222,8 @@ class MyApp extends connect(store)(LitElement) {
 
       <!-- This gets hidden on a small screen-->
       <nav class="toolbar-list">
-        <a selected?="${_page === 'about'}" href="/about">About Us</a>
-        <a selected?="${_page === 'projects'}" href="/projects">Projects</a>
+        <a ?selected="${_page === 'about'}" href="/about">About Us</a>
+        <a ?selected="${_page === 'projects'}" href="/projects">Projects</a>
       </nav>
     </app-header>
 
