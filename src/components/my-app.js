@@ -38,7 +38,6 @@ import '../push-notifications.js';
 
 class MyApp extends connect(store)(LitElement) {
   render() {
-    const {appTitle, _page, _drawerOpened, _snackbarOpened, _offline} = this;
     // Anything that's related to rendering should be done in here.
     return html`
     <style>
@@ -214,37 +213,37 @@ class MyApp extends connect(store)(LitElement) {
     <!-- Header -->
     <app-header condenses reveals effects="waterfall blend-background parallax-background">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" title="Menu" @click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
-        <div main-title>${appTitle}</div>
+        <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
+        <div main-title>${this.appTitle}</div>
       </app-toolbar>
 
       <!-- This gets hidden on a small screen-->
       <nav class="toolbar-list">
-        <a ?selected="${_page === 'about'}" href="/about">About Us</a>
-        <a ?selected="${_page === 'projects'}" href="/projects">Projects</a>
+        <a ?selected="${this._page === 'about'}" href="/about">About Us</a>
+        <a ?selected="${this._page === 'projects'}" href="/projects">Projects</a>
       </nav>
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer .opened="${_drawerOpened}"
-        @opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+    <app-drawer .opened="${this._drawerOpened}"
+        @opened-changed="${this._drawerOpenedChanged}">
       <nav class="drawer-list">
-        <a ?selected="${_page === 'about'}" href="/about">About Us</a>
-        <a ?selected="${_page === 'projects'}" href="/projects">Projects</a>
-        <a ?selected="${_page === 'privacy'}" href="/privacy">Privacy Information</a>
-        <a ?selected="${_page === 'terms'}" href="/terms">Terms of Service</a>
+        <a ?selected="${this._page === 'about'}" href="/about">About Us</a>
+        <a ?selected="${this._page === 'projects'}" href="/projects">Projects</a>
+        <a ?selected="${this._page === 'privacy'}" href="/privacy">Privacy Information</a>
+        <a ?selected="${this._page === 'terms'}" href="/terms">Terms of Service</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main class="main-content">
-      <my-about class="page" ?active="${_page === 'about'}"></my-about>
-      <my-privacy class="page" ?active="${_page === 'privacy'}"></my-privacy>
-      <my-terms class="page" ?active="${_page === 'terms'}"></my-terms>
-      <my-projects class="page" ?active="${_page === 'projects'}"></my-projects>
-      <my-single-project class="page" ?active="${_page === 'single-project'}"></my-single-project>
-      <my-single-release class="page" ?active="${_page === 'single-release'}"></my-single-release>
-      <my-view404 class="page" ?active="${_page === 'view404'}"></my-view404>
+      <my-about class="page" ?active="${this._page === 'about'}"></my-about>
+      <my-privacy class="page" ?active="${this._page === 'privacy'}"></my-privacy>
+      <my-terms class="page" ?active="${this._page === 'terms'}"></my-terms>
+      <my-projects class="page" ?active="${this._page === 'projects'}"></my-projects>
+      <my-single-project class="page" ?active="${this._page === 'single-project'}"></my-single-project>
+      <my-single-release class="page" ?active="${this._page === 'single-release'}"></my-single-release>
+      <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
     </main>
 
     <footer>
@@ -262,8 +261,8 @@ class MyApp extends connect(store)(LitElement) {
       </div>
     </footer>
 
-    <snack-bar ?active="${_snackbarOpened}">
-        You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
+    <snack-bar ?active="${this._snackbarOpened}">
+        You are now ${this._offline ? 'offline' : 'online'}.</snack-bar>
     `;
   }
 
@@ -303,7 +302,15 @@ class MyApp extends connect(store)(LitElement) {
     }
   }
 
-  _stateChanged(state) {
+  _menuButtonClicked() {
+    store.dispatch(updateDrawerState(true));
+  }
+
+  _drawerOpenedChanged(e) {
+    store.dispatch(updateDrawerState(e.target.opened));
+  }
+
+  stateChanged(state) {
     this._page = state.app.page;
     this._offline = state.app.offline;
     this._snackbarOpened = state.app.snackbarOpened;
