@@ -42,10 +42,10 @@
     "gulp-replace": "^1.0.0",
     "mocha": "^5.2.0",
     "pixelmatch": "^4.0.2",
-    "polymer-cli": "^1.8.0",
+    "polymer-cli": "^1.9.1",
     "polyserve": "^0.27.12",
     "prpl-server": "^1.2.0",
     "puppeteer": "^1.6.2",
-    "wct-browser-legacy": "^1.0.1"
+    "wct-browser-legacy": "^1.0.2"
   }
 }
