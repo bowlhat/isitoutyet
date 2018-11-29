@@ -10,3 +10,5 @@ _site/
 functions/build
 functions/node_modules/
 functions/**/*.js
+
+*.log
