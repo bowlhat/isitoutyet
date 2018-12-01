@@ -13,7 +13,7 @@
     "build:prpl-server": "polymer build --auto-base-path && gulp prpl-server",
     "build:static": "polymer build",
     "build:firebase": "tsc --project functions && gulp firebase",
-    "serve:prpl-server": "firebase serve --only hosting",
+    "serve": "npm run build && firebase serve",
     "serve:static": "polymer serve --port 5000 build/es5-bundled",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "mocha test/integration --timeout=10000",
