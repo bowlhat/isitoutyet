@@ -23,8 +23,8 @@ store.addReducers({
 
 class MyProjects extends connect(store)(PageViewElement) {
   render() {
-    const {projects} = this;
-
+    let {projects} = this;
+    projects = projects || [];
     return html`
       ${SharedStyles}
       <style>
@@ -79,7 +79,7 @@ class MyProjects extends connect(store)(PageViewElement) {
   }
 
   // This is called every time something is updated in the store.
-  _stateChanged(state) {
+  stateChanged(state) {
     this.projects = state.projects.projects;
   }
 }

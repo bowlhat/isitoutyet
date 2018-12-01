@@ -17,3 +17,4 @@ firestore.settings(settings);
 const messaging = firebase.messaging();
 
 export {firestore, messaging};
+

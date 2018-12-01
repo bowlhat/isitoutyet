@@ -142,7 +142,7 @@ class MySingleProject extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  _stateChanged(state) {
+  stateChanged(state) {
     this.project  = state.projects.project;
     this.releases = state.releases.releases;
   }

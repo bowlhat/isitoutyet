@@ -6,7 +6,7 @@
 // };
 // const client = new GraphClient(graphQLOptions);
 
-import {firestore} from '../firebase';
+import {firestore} from '../firebase.js';
 
 export const GET_ALL_PROJECTS = 'GET_ALL_PROJECTS';
 export const GET_PROJECT = 'GET_PROJECT';
