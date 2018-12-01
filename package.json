@@ -47,6 +47,7 @@
     "polyserve": "^0.27.12",
     "prpl-server": "^1.2.0",
     "puppeteer": "^1.11.0",
+    "typescript": "^3.2.1",
     "wct-mocha": "^1.0.0"
   }
 }
