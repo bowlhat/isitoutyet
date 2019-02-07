@@ -9,34 +9,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { LitElement, html, css, property, PropertyValues } from 'lit-element';
-import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
-import { installOfflineWatcher } from 'pwa-helpers/network.js';
-import { installRouter } from 'pwa-helpers/router.js';
-import { updateMetadata } from 'pwa-helpers/metadata.js';
+import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings';
+import { connect } from 'pwa-helpers/connect-mixin';
+import { installMediaQueryWatcher } from 'pwa-helpers/media-query';
+import { installOfflineWatcher } from 'pwa-helpers/network';
+import { installRouter } from 'pwa-helpers/router';
+import { updateMetadata } from 'pwa-helpers/metadata';
 
 // This element is connected to the Redux store.
-import { store, RootState } from '../store.js';
+import { store, RootState } from '../store';
 
 // These are the actions needed by this element.
 import {
   navigate,
   updateOffline,
   updateDrawerState
-} from '../actions/app.js';
+} from '../actions/app';
 
 // The following line imports the type only - it will be removed by tsc so
 // another import for app-drawer.js is required below.
-import { AppDrawerElement } from '@polymer/app-layout/app-drawer/app-drawer.js';
+import { AppDrawerElement } from '@polymer/app-layout/app-drawer/app-drawer';
 
 // These are the elements needed by this element.
-import '@polymer/app-layout/app-drawer/app-drawer.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { menuIcon } from './my-icons.js';
-import './snack-bar.js';
+import '@polymer/app-layout/app-drawer/app-drawer';
+import '@polymer/app-layout/app-header/app-header';
+import '@polymer/app-layout/app-scroll-effects/effects/waterfall';
+import '@polymer/app-layout/app-toolbar/app-toolbar';
+import { menuIcon } from './my-icons';
+import './snack-bar';
 
 class MyApp extends connect(store)(LitElement) {
   @property({type: String})
@@ -67,8 +67,8 @@ class MyApp extends connect(store)(LitElement) {
       --app-section-even-color: #f7f7f7;
       --app-section-odd-color: white;
 
-      --app-header-background-color: white;
-      --app-header-text-color: var(--app-dark-text-color);
+      --app-header-background-color: gray;
+      --app-header-text-color: var(--app-light-text-color);
       --app-header-selected-color: var(--app-primary-color);
 
       --app-drawer-background-color: var(--app-secondary-color);
@@ -81,15 +81,23 @@ class MyApp extends connect(store)(LitElement) {
       top: 0;
       left: 0;
       width: 100%;
+      height: 240px;
       text-align: center;
       background-color: var(--app-header-background-color);
       color: var(--app-header-text-color);
       border-bottom: 1px solid #eee;
+      --app-header-background-front-layer: {
+        background-position: center center;
+        background-image: url(images/header-bg-1600.jpg);
+      };
+      --app-header-background-rear-layer: {
+        background-color: var(--app-header-background-color);
+      };
     }
 
-    .toolbar-top {
+    /*.toolbar-top {
       background-color: var(--app-header-background-color);
-    }
+    }*/
 
     [main-title] {
       font-family: 'Pacifico';
@@ -154,7 +162,7 @@ class MyApp extends connect(store)(LitElement) {
     }
 
     .main-content {
-      padding-top: 64px;
+      padding-top: 240px;
       min-height: 100vh;
     }
 
@@ -168,14 +176,31 @@ class MyApp extends connect(store)(LitElement) {
 
     footer {
       padding: 24px;
-      background: var(--app-drawer-background-color);
-      color: var(--app-drawer-text-color);
+      background: var(--app-section-odd-color);
+      color: var(--app-dark-text-color);
       text-align: center;
+    }
+
+    footer a {
+      color: var(--app-dark-text-color);
+    }
+
+    .copyright-logo {
+      background: url(https://bowlhat.net/wp-content/themes/bowlhat-freelance/images/logo.svg) center center no-repeat;
+      background-size: 80px 48px;
+      width: 190px;
+      height: 50px;
+      margin: 35px auto;
+      text-indent: -9999px;
     }
 
     /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout */
     @media (min-width: 460px) {
+      app-header {
+        height: 500px;
+      }
+
       .toolbar-list {
         display: block;
       }
@@ -185,7 +210,7 @@ class MyApp extends connect(store)(LitElement) {
       }
 
       .main-content {
-        padding-top: 107px;
+        padding-top: 507px;
       }
 
       /* The drawer button isn't shown in the wide layout, so we don't
@@ -208,9 +233,8 @@ class MyApp extends connect(store)(LitElement) {
 
         <!-- This gets hidden on a small screen-->
         <nav class="toolbar-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">View One</a>
-          <a ?selected="${this._page === 'view2'}" href="/view2">View Two</a>
-          <a ?selected="${this._page === 'view3'}" href="/view3">View Three</a>
+          <a ?selected="${this._page === 'about'}" href="/about">About</a>
+          <a ?selected="${this._page === 'projects'}" href="/projects">Projects</a>
         </nav>
       </app-header>
 
@@ -219,22 +243,37 @@ class MyApp extends connect(store)(LitElement) {
           .opened="${this._drawerOpened}"
           @opened-changed="${this._drawerOpenedChanged}">
         <nav class="drawer-list">
-          <a ?selected="${this._page === 'view1'}" href="/view1">View One</a>
-          <a ?selected="${this._page === 'view2'}" href="/view2">View Two</a>
-          <a ?selected="${this._page === 'view3'}" href="/view3">View Three</a>
+          <a ?selected="${this._page === 'about'}" href="/about">About</a>
+          <a ?selected="${this._page === 'projects'}" href="/projects">Projects</a>
+          <a ?selected="${this._page === 'privacy'}" href="/privacy">Privacy</a>
+          <a ?selected="${this._page === 'terms'}" href="/terms">Terms</a>
         </nav>
       </app-drawer>
 
       <!-- Main content -->
       <main role="main" class="main-content">
-        <my-view1 class="page" ?active="${this._page === 'view1'}"></my-view1>
-        <my-view2 class="page" ?active="${this._page === 'view2'}"></my-view2>
-        <my-view3 class="page" ?active="${this._page === 'view3'}"></my-view3>
+        <my-about class="page" ?active="${this._page === 'about'}"></my-about>
+        <my-projects class="page" ?active="${this._page === 'projects'}"></my-projects>
+        <my-single-project class="page" ?active="${this._page === 'single-project'}"></my-single-project>
+        <my-single-release class="page" ?active="${this._page === 'single-release'}"></my-single-release>
+        <my-privacy class="page" ?active="${this._page === 'privacy'}"></my-privacy>
+        <my-terms class="page" ?active="${this._page === 'terms'}"></my-terms>
         <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
       </main>
 
       <footer>
-        <p>Made with &hearts; by the Polymer team.</p>
+        <div>
+          <p>
+            <a href="/">Home</a>
+            <span>|</span>
+            <a href="/privacy">Privacy</a>
+            <span>|</span>
+            <a href="/terms">Terms</a>
+            <span>|</span>
+            <span>© Daniel Llewellyn T/A Bowl Hat</span>
+          </p>
+          <p class="copyright-logo">Bowl Hat</p>
+        </div>
       </footer>
 
       <snack-bar ?active="${this._snackbarOpened}">

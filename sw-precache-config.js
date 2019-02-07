@@ -9,6 +9,9 @@
  */
 
 module.exports = {
+  importScripts: [
+    '/firebase-messaging-sw.js'
+  ],
   staticFileGlobs: [
     'manifest.json',
     'src/**/*',

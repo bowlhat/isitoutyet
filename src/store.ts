@@ -24,23 +24,26 @@ import {
   StoreEnhancer
 } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { lazyReducerEnhancer } from 'pwa-helpers/lazy-reducer-enhancer.js';
+import { lazyReducerEnhancer } from 'pwa-helpers/lazy-reducer-enhancer';
 
-import app, { AppState } from './reducers/app.js';
-import { CounterState } from './reducers/counter.js';
-import { ShopState } from './reducers/shop.js';
-import { AppAction } from './actions/app.js';
-import { CounterAction } from './actions/counter.js';
-import { ShopAction } from './actions/shop.js';
+import app, { AppState } from './reducers/app';
+import { ProjectsState } from './reducers/projects';
+import { ReleasesState } from './reducers/releases';
+import { AppAction } from './actions/app';
+import { ProjectsAction } from './actions/projects';
+import { ReleasesAction } from './actions/releases';
 
 // Overall state extends static states and partials lazy states.
 export interface RootState {
+    [x: string]: any;
   app?: AppState;
-  counter?: CounterState;
-  shop?: ShopState;
+  projectId?: string;
+  releaseId?: string;
+  projects?: ProjectsState;
+  releases?: ReleasesState;
 }
 
-export type RootAction = AppAction | CounterAction | ShopAction;
+export type RootAction = AppAction | ProjectsAction | ReleasesAction;
 
 // Sets up a Chrome extension for time travel debugging.
 // See https://github.com/zalmoxisus/redux-devtools-extension for more information.

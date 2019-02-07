@@ -5,26 +5,37 @@
     "images/**/*"
   ],
   "extraDependencies": [
-    "manifest.json",
     "node_modules/@webcomponents/webcomponentsjs/**",
-    "push-manifest.json"
+    "push-manifest.json",
+    "manifest.webmanifest",
+    "firebase-messaging-sw.js",
+    "browserconfig.xml",
+    "crossdomain.xml"
   ],
   "builds": [
+    {
+      "name": "esm-unbundled",
+      "browserCapabilities": [
+        "es2015",
+        "modules",
+        "push"
+      ],
+      "js": { "minify": true },
+      "css": { "minify": true },
+      "html": { "minify": true },
+      "bundle": false,
+      "addServiceWorker": true,
+      "addPushManifest": true
+    },
     {
       "name": "esm-bundled",
       "browserCapabilities": [
         "es2015",
         "modules"
       ],
-      "js": {
-        "minify": true
-      },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
-      },
+      "js": { "minify": true },
+      "css": { "minify": true },
+      "html": { "minify": true },
       "bundle": true,
       "addServiceWorker": true
     },
@@ -38,12 +49,8 @@
         "minify": true,
         "transformModulesToAmd": true
       },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
-      },
+      "css": { "minify": true },
+      "html": { "minify": true },
       "bundle": true,
       "addServiceWorker": true
     },
@@ -54,12 +61,8 @@
         "minify": true,
         "transformModulesToAmd": true
       },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
-      },
+      "css": { "minify": true },
+      "html": { "minify": true },
       "bundle": true,
       "addServiceWorker": true
     }

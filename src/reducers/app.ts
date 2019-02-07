@@ -14,15 +14,20 @@ import {
   UPDATE_OFFLINE,
   OPEN_SNACKBAR,
   CLOSE_SNACKBAR,
-  UPDATE_DRAWER_STATE
-} from '../actions/app.js';
-import { RootAction } from '../store.js';
+  UPDATE_DRAWER_STATE,
+
+  UPDATE_PROJECT,
+  UPDATE_RELEASE,
+} from '../actions/app';
+import { RootAction } from '../store';
 
 export interface AppState {
   page: string;
   offline: boolean;
   drawerOpened: boolean;
   snackbarOpened: boolean;
+  projectId: string;
+  releaseId: string;
 }
 
 const INITIAL_STATE: AppState = {
@@ -30,6 +35,8 @@ const INITIAL_STATE: AppState = {
   offline: false,
   drawerOpened: false,
   snackbarOpened: false,
+  projectId: '',
+  releaseId: '',
 };
 
 const app: Reducer<AppState, RootAction> = (state = INITIAL_STATE, action) => {
@@ -59,6 +66,18 @@ const app: Reducer<AppState, RootAction> = (state = INITIAL_STATE, action) => {
         ...state,
         snackbarOpened: false
       };
+
+    case UPDATE_PROJECT:
+      return {
+        ...state,
+        projectId: action.projectId
+      };
+    case UPDATE_RELEASE:
+      return {
+        ...state,
+        releaseId: action.releaseId
+      };
+
     default:
       return state;
   }

@@ -4,3 +4,7 @@ test/integration/screenshots-current/
 _site/
 .DS_Store
 src/**/*.js
+src/**/*.js.map
+functions/**/*.js
+functions/**/*.js.map
+.firebase
