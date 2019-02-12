@@ -70,6 +70,9 @@ class MyProjects extends connect(store)(PageViewElement) {
           `
         })}
       </article>
+      <footer>
+        <p class="donate">Enjoying this site? Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> to it's continued maintenance.</p>
+      </footer>
     </section>
     `;
   }

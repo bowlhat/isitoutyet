@@ -1,11 +1,19 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, property, html, css } from 'lit-element';
+import { connect } from 'pwa-helpers/connect-mixin.js';
 // import "@material/mwc-button/mwc-button.js";
 
 import { ButtonSharedStyles } from './button-shared-styles';
 import {messaging} from '../push-notifications';
+import { store, RootState } from '../store';
+import { Project } from '../reducers/projects';
+import projects from '../reducers/projects';
+import {plusIcon, minusIcon} from './my-icons';
 
-const unavailNotifyText = 'Notifcations unavailable';
-const notifyText        = 'Notify me!';
+store.addReducers({
+    projects,
+});
+
+const notifyText        = 'Notify me of new releases!';
 const stopNotifyText    = 'Stop notifying me';
 // const errorMsg          = 'An error occurred';
 
@@ -34,26 +42,40 @@ function storageAvailable(type: string) {
 }
 const localStorageActive = storageAvailable('localStorage');
 
-class PushNotificationButton extends LitElement {
-    disabled: boolean
-    subscribed: boolean
-    twoButtonMode: boolean
-    buttonText: string
-    project: string
+class PushNotificationButton extends connect(store)(LitElement) {
+    @property({type: Boolean})
+    private disabled: boolean = false;
 
-    static get styles() {
-        return [
-            ButtonSharedStyles,
-            css`
-                :host {
-                    text-align: center;
-                    display: block;
-                }
-            `
-        ];
-    }
+    @property({type: Boolean})
+    private subscribed: boolean = false;
+
+    @property({type: Boolean})
+    private twoButtonMode: boolean = false;
+
+    @property({type: String})
+    public project: string = '';
+
+    static styles = [
+        ButtonSharedStyles,
+        css`
+            :host {
+                text-align: center;
+                display: block;
+                margin-bottom: 1em;
+            }
+            button {
+                font-size: 1.2rem;
+            }
+            button svg {
+                vertical-align: bottom;
+                width: 1.4rem;
+                height: 1.4rem;
+                margin-right: 0.4rem;
+            }
+        `
+    ];
     
-    render() {
+    protected render() {
         const {disabled, subscribed, twoButtonMode} = this;
 
         return html`
@@ -61,48 +83,12 @@ class PushNotificationButton extends LitElement {
                 <button @click="${this.subscribe.bind(this)}" ?disabled="${disabled}">${notifyText}</button>
                 <button @click="${this.unsubscribe.bind(this)}" ?disabled="${disabled}">${stopNotifyText}</button>
             ` : html`
-                <button @click="${this.clickHandler.bind(this)}" ?disabled="${disabled}">${subscribed ? stopNotifyText : notifyText}</button>            
+                <button @click="${this.clickHandler.bind(this)}" ?disabled="${disabled}">${subscribed ? html`${minusIcon}${stopNotifyText}` : html`${plusIcon}${notifyText}`}</button>            
             `}
         `;
     }
   
-    static get properties() {
-        return {
-            disabled: { type: Boolean },
-            subscribed: { type: Boolean },
-            twoButtonMode: { type: Boolean },
-            project: {
-                type: String,
-                observer: '_projectChanged'
-            },
-            active: { type: Boolean },
-        };
-    }
-  
-    constructor() {
-        super();
-        this.buttonText = unavailNotifyText;
-        if (localStorageActive) {
-            this.twoButtonMode = false;
-        } else {
-            this.twoButtonMode = true;
-        }
-        this.subscribed = false;
-        this.disabled = false;
-        this.project = '';
-    }
-
-    update(changedProps: Map<string, string | boolean>) {
-        if (changedProps.has('project')) {
-            const projectName = changedProps.get('project');
-            if (typeof projectName === 'string' && projectName) {
-                this.subscribed = !!('subscribed' === localStorage.getItem(projectName))
-            }
-        }
-        super.update(changedProps);
-    }
-  
-    async subscribe() {
+    private async subscribe() {
         try {
             await messaging.requestPermission();
             const token = await messaging.getToken();
@@ -116,7 +102,6 @@ class PushNotificationButton extends LitElement {
                     body: JSON.stringify({ token }),
                 });
             }
-            this.buttonText = unavailNotifyText;
             this.subscribed = true;
             localStorage.setItem(this.project, 'subscribed');
         }
@@ -125,7 +110,7 @@ class PushNotificationButton extends LitElement {
         }
     }
   
-    async unsubscribe() {
+    private async unsubscribe() {
         try {
             const token = await messaging.getToken();
             if (token) {
@@ -146,11 +131,25 @@ class PushNotificationButton extends LitElement {
         }
     }
   
-    clickHandler() {
+    private clickHandler() {
         if (!this.subscribed) {
             return this.subscribe();
         }
         return this.unsubscribe();
+    }
+
+    // This is called every time something is updated in the store.
+    stateChanged(state: RootState) {
+        if (state.projects && state.projects.project) {
+            const project: Project = state.projects.project;
+            if (project.name) {
+                this.project = project.name;
+                this.disabled = false;
+                this.subscribed = !!(localStorageActive && 'subscribed' === localStorage.getItem(this.project))
+            } else {
+                this.disabled = true;
+            }
+        }
     }
 }
 

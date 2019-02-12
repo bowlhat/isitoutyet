@@ -55,4 +55,11 @@ export const SharedStyles = css`
     font-size: 30px;
     line-height: 64px;
   }
+
+  .donate {
+    line-height: 1.8em;
+  }
+  .donate img {
+    vertical-align: bottom;
+  }
 `;

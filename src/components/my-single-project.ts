@@ -16,7 +16,7 @@ import { PageViewElement } from './page-view-element';
 import { store, RootState } from '../store';
 
 // These are the elements needed by this element.
-import './projects-project';
+import './push-notification-button';
 
 // These are the actions needed by this element.
 import { getProject } from '../actions/projects';
@@ -93,6 +93,8 @@ class MySingleProject extends connect(store)(PageViewElement) {
   ];
 
   protected render() {
+    const donateLink = html`<li class="donate">Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking ${this._project.name}'s releases</li>`;
+    let counter = 0;
       return html`
         <section>
             <nav>
@@ -109,7 +111,7 @@ class MySingleProject extends connect(store)(PageViewElement) {
 
         <section>
             <article>
-                <push-notification-button project="${this._project.slug}"></push-notification-button>
+                <push-notification-button></push-notification-button>
                 ${this._project.logo && html`
                   <div class="logo">
                       <img src="${this._project.logo}" alt="${this._project.name} logo" />
@@ -119,6 +121,7 @@ class MySingleProject extends connect(store)(PageViewElement) {
                 <h3>Known releases</h3>
                 <ul class="list">
                     ${this._releases.map(release => html`
+                      ${counter++ === 5 || counter % 35 === 0 ? donateLink : ''}
                       <li>
                           <a href="/projects/${this._project.slug}/${release.id}">
                           ${this._project.name} ${release.version} ${release.codename}
@@ -126,6 +129,7 @@ class MySingleProject extends connect(store)(PageViewElement) {
                           </a>
                       </li>
                     `)}
+                    ${counter < 5 || counter % 35 > 12 ? donateLink : ''}
                 </ul>
             </article>
         </section>

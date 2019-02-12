@@ -17,6 +17,7 @@ export const ButtonSharedStyles = css`
     background: transparent;
     border: none;
     cursor: pointer;
+    padding: 1em 2em;
   }
 
   button:hover svg {

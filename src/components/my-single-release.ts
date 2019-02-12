@@ -125,6 +125,7 @@ class MySingleRelease extends connect(store)(PageViewElement) {
                     <p>Release date: ${releaseDate} ${releaseTime}</p>
                     <p>Email received: ${emailDate} ${emailTime}</p>
                     <p>Subject: ${email ? email.subject : ''}</p>
+                    <p class="donate">Your donations keep us afloat. Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> to continued maintenance of this project.</p>
                     <code>
                         ${email && email.body ? email.body.split(/\r\n\r\n|\n\n|\r\r/).map(paragraph => {
                             paragraph = paragraph.trim();
