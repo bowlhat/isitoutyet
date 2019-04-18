@@ -24,12 +24,12 @@ language: node_js
 #     - secure: MIqRhLuXEh4qKMvVnbqs2jAtwsGgnl8qLYRNGKeG5eUf3aJT86FJefcccddVAipNun10fnkSkNd2rpNb/G8Htxvyg9lYiOeCDOvxsaDtYwxvz1WGk2u5kRUjkfyb2LVzUV0MCUSiR+o/9qUXy5TVcwrzAN/4Jin8diMPVkuektP5xhyVm1BAMufn+IcX56xtkT123Egz1Y0N47TKB4rEqhVUazYvMy2Vq2Xs2NIpVT2v8+91UzRLCeESIKKPFfZvdgVHovqKiKmsXLMsGTsAKT6FjimSmKvknC4iR7B3CiQQwoo0GIJjd/QKy35S3wMUoZEy+WpN8hBuKoJLg2GtaVmsV1MEAyKBFtMRPQwUTSPSxz5RQzVYKby9TsOKulFbsfk1jRzAlJSc4USSXO7/HH/vcTF0NZJhqvZAo8mX43UqQSmOEo6vobEASM8I5lysQnuqjrDTowg8Wou7a0yhIaKiGBhf5Yy61mSqURNBXCpRHR75SDr2/9qtqU8hfH6PqCuLHtQ0eEhNzfcjo8fPRcAx2QWPmmnOpDAZcxFvVGlkiM5aOFlRiPbGLFADkzm1uDh7GYfSChoLoEhM/MJMxl0OeLIcKpsgXUjrQv2KdJCVtbu610jMlH98J5GsfoA7SkKUn8DYujkuhaHBqYKLjZ7tCVLXsoMZqJcQf7W5Q3g=
 
 addons:
-  artifacts: true
-  paths:
-    - ./.firebaserc
-    - ./firebase.json
-    - ./server
-    - ./functions
+  artifacts:
+    paths:
+      - ./.firebaserc
+      - ./firebase.json
+      - ./server
+      - ./functions
 
 node_js: '8'
 
