@@ -1,23 +1,48 @@
 language: node_js
-matrix:
+
+# matrix:
+#   include:
+#   - node_js: '8'
+#     os: osx
+#     script: npm run test:integration
+#   - node_js: '8'
+#     sudo: required
+#     os: linux
+#     dist: trusty
+#     addons:
+#       chrome: stable
+#       firefox: latest
+#     before_script:
+#     - export DISPLAY=:99.0
+#     - sh -e /etc/init.d/xvfb start
+#     script:
+#     - npm run test:unit
+#     - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then npm run test:sauce; fi
+# env:
+#   global:
+#     - secure: C+/z9HB1amzxgntbpkNhjcWeYFt6uagVAp2TuceInyzCpwD8A9mOG+X3pfBX8A0OJnKchSduXbcUzcg8Rw2ZVR/RZajkzWUnInFNeFm4WMgHZFQxc+pHq9o5UyCw+Q237+S5IdC+WI0lfAGh3+5OeGvS+JoC3jUarYb6UlCybgfkqA+Zo0wy6Xyjisb3vYKPnmmF+Ki5fkzwLqpkcqQI3zZQZimTZHNwGOJO6ib2uEEjaCVhvG1XKDlF8M+07arE97hKOJEEKIHHPOaPtABw634OfwbiS5lPHlb626VD+ry08P1FH7mg3XM+XdUS7T+o3Lb2RScjA5jetF27s2E9mK467zIw60kC5e8eDx8/uJWlx/c3jT4nQQ+epjTp7M5lbOQBYiQttGureaWHSVVvUJKTrSN8CxceV7Zmia1N9dtC3o2CEDZyrbJ5+2tR8POkUZkz5XHNhHg0/U/vq0dm3LjhOGfyKCqD4o1qS2ytdzPVu2fwHdD63NxU1pKPeYNcO3aKASTgUJpPWA4j/JQWWNF/HTUU6NMO3ihKxX+ZeenX/wtvSrurNIFhIqf81hr0iRYVH+pMOZ7shfr65w6GgllQjO2gFz8IZyc0t9I5CJnOVyhHfgdVj4XgeTHaxDalYE/eB/ny1unxbG/c+6v06pHWJ9HNXFd5VXPTmtNu1m8=
+#     - secure: MIqRhLuXEh4qKMvVnbqs2jAtwsGgnl8qLYRNGKeG5eUf3aJT86FJefcccddVAipNun10fnkSkNd2rpNb/G8Htxvyg9lYiOeCDOvxsaDtYwxvz1WGk2u5kRUjkfyb2LVzUV0MCUSiR+o/9qUXy5TVcwrzAN/4Jin8diMPVkuektP5xhyVm1BAMufn+IcX56xtkT123Egz1Y0N47TKB4rEqhVUazYvMy2Vq2Xs2NIpVT2v8+91UzRLCeESIKKPFfZvdgVHovqKiKmsXLMsGTsAKT6FjimSmKvknC4iR7B3CiQQwoo0GIJjd/QKy35S3wMUoZEy+WpN8hBuKoJLg2GtaVmsV1MEAyKBFtMRPQwUTSPSxz5RQzVYKby9TsOKulFbsfk1jRzAlJSc4USSXO7/HH/vcTF0NZJhqvZAo8mX43UqQSmOEo6vobEASM8I5lysQnuqjrDTowg8Wou7a0yhIaKiGBhf5Yy61mSqURNBXCpRHR75SDr2/9qtqU8hfH6PqCuLHtQ0eEhNzfcjo8fPRcAx2QWPmmnOpDAZcxFvVGlkiM5aOFlRiPbGLFADkzm1uDh7GYfSChoLoEhM/MJMxl0OeLIcKpsgXUjrQv2KdJCVtbu610jMlH98J5GsfoA7SkKUn8DYujkuhaHBqYKLjZ7tCVLXsoMZqJcQf7W5Q3g=
+
+addons:
+  artifacts: true
+
+jobs:
   include:
-  - node_js: '10'
-    os: osx
-    script: npm run test:integration
-  - node_js: '10'
-    sudo: required
-    os: linux
-    dist: trusty
-    addons:
-      chrome: stable
-      firefox: latest
-    before_script:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-    script:
-    - npm run test:unit
-    - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then npm run test:sauce; fi
-env:
-  global:
-  - secure: C+/z9HB1amzxgntbpkNhjcWeYFt6uagVAp2TuceInyzCpwD8A9mOG+X3pfBX8A0OJnKchSduXbcUzcg8Rw2ZVR/RZajkzWUnInFNeFm4WMgHZFQxc+pHq9o5UyCw+Q237+S5IdC+WI0lfAGh3+5OeGvS+JoC3jUarYb6UlCybgfkqA+Zo0wy6Xyjisb3vYKPnmmF+Ki5fkzwLqpkcqQI3zZQZimTZHNwGOJO6ib2uEEjaCVhvG1XKDlF8M+07arE97hKOJEEKIHHPOaPtABw634OfwbiS5lPHlb626VD+ry08P1FH7mg3XM+XdUS7T+o3Lb2RScjA5jetF27s2E9mK467zIw60kC5e8eDx8/uJWlx/c3jT4nQQ+epjTp7M5lbOQBYiQttGureaWHSVVvUJKTrSN8CxceV7Zmia1N9dtC3o2CEDZyrbJ5+2tR8POkUZkz5XHNhHg0/U/vq0dm3LjhOGfyKCqD4o1qS2ytdzPVu2fwHdD63NxU1pKPeYNcO3aKASTgUJpPWA4j/JQWWNF/HTUU6NMO3ihKxX+ZeenX/wtvSrurNIFhIqf81hr0iRYVH+pMOZ7shfr65w6GgllQjO2gFz8IZyc0t9I5CJnOVyhHfgdVj4XgeTHaxDalYE/eB/ny1unxbG/c+6v06pHWJ9HNXFd5VXPTmtNu1m8=
-  - secure: MIqRhLuXEh4qKMvVnbqs2jAtwsGgnl8qLYRNGKeG5eUf3aJT86FJefcccddVAipNun10fnkSkNd2rpNb/G8Htxvyg9lYiOeCDOvxsaDtYwxvz1WGk2u5kRUjkfyb2LVzUV0MCUSiR+o/9qUXy5TVcwrzAN/4Jin8diMPVkuektP5xhyVm1BAMufn+IcX56xtkT123Egz1Y0N47TKB4rEqhVUazYvMy2Vq2Xs2NIpVT2v8+91UzRLCeESIKKPFfZvdgVHovqKiKmsXLMsGTsAKT6FjimSmKvknC4iR7B3CiQQwoo0GIJjd/QKy35S3wMUoZEy+WpN8hBuKoJLg2GtaVmsV1MEAyKBFtMRPQwUTSPSxz5RQzVYKby9TsOKulFbsfk1jRzAlJSc4USSXO7/HH/vcTF0NZJhqvZAo8mX43UqQSmOEo6vobEASM8I5lysQnuqjrDTowg8Wou7a0yhIaKiGBhf5Yy61mSqURNBXCpRHR75SDr2/9qtqU8hfH6PqCuLHtQ0eEhNzfcjo8fPRcAx2QWPmmnOpDAZcxFvVGlkiM5aOFlRiPbGLFADkzm1uDh7GYfSChoLoEhM/MJMxl0OeLIcKpsgXUjrQv2KdJCVtbu610jMlH98J5GsfoA7SkKUn8DYujkuhaHBqYKLjZ7tCVLXsoMZqJcQf7W5Q3g=
+    - stage: build
+      name: Build
+      node_js: '8'
+      os: linux
+      dist: xenial
+      install:
+        - npm install
+      script:
+        - npm run build
+    - stage: deploy
+      name: Deploy
+      if: branch = master
+      script: skip
+      deploy:
+        provider: firebase
+        token:
+          secure: "ex3AGpoSlMV2E3l8k0xKWEgFdpnXJYbSJ54rj8kqoGlpM+6zinmQ4IQ4p1yy5KgaR4f6B5M/3imQzOrTo6g03EpFByhm7/3i9BBxHSKDsf0MhYGtqCwlS3G0Nfxnii1OIzEBcJAW34k5D5yqPyztQsg1VbAxTYkwgnXe8wy5OJeonF2KGJUPMzH1cGP13Hzh/8s/TrvU2xxzXR0g/o80MjOkwvvahKvaqxJDremFsThdpYSwCBvwaJEHQ0JbWu6RTJLPCqYuJLkQq7Yin1/bkTsIeSpuHHZW+GPLN+9ND/1x0qGXU8+GBIcLcVIlOL/MkjFU/CjGJO2HllYNrXGXgkJoC+57hCwQwEkRw3nsTCVuZofdR7ObO5Ce8ig4LwuUJP5Bfrbc5blKU6XoLwBEwFIp0Z1hfWkcqR/Us5Tw3lVd3bk0Tndt7Ja0OKH4Yi6swu59wwHMDXHzv1Q8soYFGeskguqtr1qy0qU7DvYU17oDDKvREgcDLb2HdTR6YmBr+oh11oGlfKPFWQ8gSLwZqvQfIDjdlsPtPr2tgGcUnY81MI0BQ4qVONAqEQroNIGF1EHl0nAajHuv+mocEpsgKe4ydBiBNyU6K5c/ad111BoC2LuPh6IQEvwk/iqhl/X13liPVrjWth2dlHD3zGZ5ivTP+AjR0qY00fNEeutWZHk="
+        skip_cleanup: true
