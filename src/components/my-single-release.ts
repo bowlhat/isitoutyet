@@ -130,7 +130,7 @@ class MySingleRelease extends connect(store)(PageViewElement) {
                         ${email && email.body ? email.body.split(/\r\n\r\n|\n\n|\r\r/).map(paragraph => {
                             paragraph = paragraph.trim();
                             return html`<p>
-                                ${paragraph.match(/^([^\n\r]+(\r\n|\n|\r)\s*[-]+\s*)|(\s*[-]+\s*(\r\n|\n|\r).*)$/s)
+                                ${paragraph.match(/^([^\n\r]+(\r\n|\n|\r)\s*[-]+\s*)|(\s*[-]+\s*(\r\n|\n|\r).*)$/)
                                     ? paragraph.split(/\r\n|\n|\r/).map(line => html`${line}<br />`)
                                     : html`${paragraph}`}
                             </p>`
