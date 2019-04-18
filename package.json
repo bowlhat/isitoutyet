@@ -7,7 +7,8 @@
   "license": "BSD-3-Clause",
   "repository": "Polymer/pwa-starter-kit",
   "scripts": {
-    "deploy": "npm run build && firebase deploy",
+    "prune:production": "npm prune --production && npm --prefix functions prune --production",
+    "deploy": "npm run build && npm run prune:production && firebase deploy",
     "install": "npm --prefix functions install",
     "start": "gulp serve",
     "build": "npm run build:prpl-server && npm run build:firebase",

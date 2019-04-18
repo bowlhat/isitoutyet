@@ -25,18 +25,26 @@ language: node_js
 
 addons:
   artifacts: true
+  paths:
+    - ./.firebaserc
+    - ./firebase.json
+    - $(find ./server -type f | tr "\n" ":")
+    - $(find ./functions -type f -name "*.js" | tr "\n" ":")
+    - $(find ./functions/build -type f | tr "\n" ":")
+
+node_js: '8'
 
 jobs:
   include:
     - stage: build
       name: Build
-      node_js: '8'
       os: linux
       dist: xenial
       install:
         - npm install
       script:
         - npm run build
+        - npm run prune:production
     - stage: deploy
       name: Deploy
       if: branch = master
