@@ -8,7 +8,7 @@
   "repository": "Polymer/pwa-starter-kit",
   "scripts": {
     "prune:production": "npm prune --production && npm --prefix functions prune --production",
-    "deploy": "npm run build && npm run prune:production && firebase deploy",
+    "deploy": "npm install && npm run build && npm run prune:production && firebase deploy",
     "install": "npm --prefix functions install",
     "start": "gulp serve",
     "build": "npm run build:prpl-server && npm run build:firebase",
@@ -40,7 +40,6 @@
     "axe-core": "^3.0.0",
     "chai": "^4.1.2",
     "del": "^3.0.0",
-    "firebase-tools": "^6.6.0",
     "gulp": "^4.0.0",
     "gulp-rename": "^1.3.0",
     "gulp-replace": "^1.0.0",
