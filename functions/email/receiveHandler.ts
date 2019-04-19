@@ -16,35 +16,21 @@
 
 import XRegExp from 'xregexp';
 import uuid from 'uuid/v4';
-import {admin, functions, firestore} from '../firebase';
+import { admin, functions, firestore } from '../firebase';
 import { abortEmail, acceptEmail } from './responders';
 import { Request, Response } from 'firebase-functions';
 import { Fields } from './Fields';
+import { extractDate } from './date';
 
-const months = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+const noHeaders: string = 'No email Headers present in message';
 
-const noHeaders = 'No eMail Headers present message';
-
-let EMAIL_BASIC_AUTH = '';
+let EMAIL_BASIC_AUTH: string = '';
 if (functions.config().emailhandler) {
   EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
 }
-const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
+const CREDENTIALS_REGEXP: RegExp = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
 
-let FCM_PRIVATE_KEY = '';
+let FCM_PRIVATE_KEY: string = '';
 if (functions.config().webpush) {
   FCM_PRIVATE_KEY = functions.config().webpush.fcmprivatekey || '';
 }
@@ -52,8 +38,8 @@ if (functions.config().webpush) {
 const projects = firestore.collection('projects');
 const emails = firestore.collection('emails');
 
-export const ReceiveHandler = (request: Request, response: Response) => {
-  const transactionId = uuid();
+const ReceiveHandler = async (request: Request, response: Response) => {
+  const transactionId: string = uuid();
 
   const match = CREDENTIALS_REGEXP.exec(request.headers.authorization || '');
   if (EMAIL_BASIC_AUTH && (!match || match[1] !== EMAIL_BASIC_AUTH)) {
@@ -68,80 +54,66 @@ export const ReceiveHandler = (request: Request, response: Response) => {
 
   let date: Date = new Date();
   if (fields.headers.Date) {
-    const dateparts = (fields.headers.Date).split(' ');
-    const timeparts = dateparts[4].split(':').map(part => parseInt(part, 10));
-
-    if (dateparts[5]) {
-      const offsetDirection = dateparts[5].substr(0, 1);
-      let offsetHours = parseInt(dateparts[5].substr(1, 2), 10);
-      let offsetMinutes = parseInt(dateparts[5].substr(3, 2), 10);
-      if (offsetDirection === '+') {
-        offsetHours = -offsetHours;
-        offsetMinutes = -offsetMinutes;
-      }
-      timeparts[0] += offsetHours;
-      timeparts[1] += offsetMinutes;
-    }
-
-    date = new Date(
-      parseInt(dateparts[3], 10),
-      months.indexOf(dateparts[2]),
-      parseInt(dateparts[1], 10),
-      timeparts[0],
-      timeparts[1],
-      timeparts[2],
-    );
+    date = extractDate(fields.headers.Date);
   }
 
-  const emailUUID = uuid();
+  const emailUUID: string = uuid();
   const email = emails.doc(emailUUID)
-  return email.set({
-    sentto: fields.headers.To || '',
-    sentfrom: fields.headers.From || '',
-    received: new Date(),
-    subject: fields.headers.Subject || '',
-    body: fields.plain || '',
-  })
-  .then(() => {
-    if (!fields.headers) {
-      throw noHeaders;
-    }
-    return projects.where('toaddress', '==', fields.headers.To)
-    .onSnapshot(snapshot => {
+
+  try {
+    await email.set({
+      sentto: fields.headers.To || '',
+      sentfrom: fields.headers.From || '',
+      received: new Date(),
+      subject: fields.headers.Subject || '',
+      body: fields.plain || '',
+    })
+
+    projects.where('toaddress', '==', fields.headers.To)
+    .onSnapshot(async snapshot => {
       if (!fields.headers) {
         throw noHeaders;
       }
+
       for (const doc of snapshot.docs) {
         const project = doc.data();
-        const re = XRegExp(project['regex'], 'i');
-        if (fields.headers.Subject && re.test(fields.headers.Subject)) {
-          const matches = XRegExp.exec(fields.headers.Subject, re);
-  
-          const version = matches['version'] || '';
-          const tmpcode = matches['codename2'] || '';
-          const codename = matches['codename'] || tmpcode;
-          const islts: Boolean = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
-          const beta = matches['betatext'] || '';
-          const rc = matches['rctext'] || '';
-          const preRelInfo =  `${beta} ${rc}`.trim();
+        // const re: RegExp = XRegExp(project['regex'], 'i');
+        // if (fields.headers.Subject && re.test(fields.headers.Subject)) {
+        //   const matches: RegExpExecArray = XRegExp.exec(fields.headers.Subject, re);
 
-          const releaseUUID = uuid();
+        //   const version: string = matches['version'] || '';
+        //   const tmpcode: string = matches['codename2'] || '';
+        //   const codename: string = matches['codename'] || tmpcode;
+        //   const islts: Boolean = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
+        //   const beta: string = matches['betatext'] || '';
+        //   const rc: string = matches['rctext'] || '';
+        //   const preRelInfo: string =  `${beta} ${rc}`.trim();
+
+
+
+        
+        // TODO: do AI test
+
+          const releaseUUID: string = uuid();
 
           const releases = doc.ref.collection('releases');
+          
+          try {
+            await releases.doc(releaseUUID).set({
+              date,
+              // version,
+              // islts,
+              // codename,
+              // beta: preRelInfo,
+              email: email,
+            })
 
-          return releases.doc(releaseUUID).set({
-            date,
-            version,
-            islts,
-            codename,
-            beta: preRelInfo,
-            email: email,
-          }).then(() => {
-            const name = `${project['name']}${version && ` ${version}`}${codename && ` ${codename}`}${islts && ' LTS'}${preRelInfo && ` ${preRelInfo}`}`.trim();
-            const body = `${name} has just been released!`;
-            const icon = project['logo'];
+            // const name: string = `${project['name']}${version && ` ${version}`}${codename && ` ${codename}`}${islts && ' LTS'}${preRelInfo && ` ${preRelInfo}`}`.trim();
+            const name: string = project['name'];
+            const body: string = `${name} has just been released!`;
+            const icon: string = project['logo'];
 
-            return admin.messaging().send({
+            const response: string = await admin.messaging().send({
               topic: doc.id,
               notification: {
                 title: 'Is it out yet? Yes it is!',
@@ -160,21 +132,21 @@ export const ReceiveHandler = (request: Request, response: Response) => {
                   icon,
                 },
               },
-            }).then(response => {
-              console.log('Receive email: Successfully sent push message:', response);
-            }).catch(e => {
-              console.log('Receive email: Error sending push message:', e);
             });
-          });
-        }
-      }
+            console.log('Receive email: Successfully sent push message:', response);
+          } catch (e) {
+            console.log('Receive Email: Error sending push message:', e);
+          }
+        // }
+      };
     });
-  })
-  .then(acceptEmail(transactionId, response, fields))
-  .catch(e => {
+    acceptEmail(transactionId, response, fields)
+  } catch (e) {
     console.log('Receive Email: Error encountered:', e);
     if (!response.headersSent) {
       abortEmail(transactionId, response)(e);
     }
-  });
+  }
 };
+
+export { ReceiveHandler };
