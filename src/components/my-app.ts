@@ -33,7 +33,7 @@ import { AppDrawerElement } from '@polymer/app-layout/app-drawer/app-drawer';
 // These are the elements needed by this element.
 import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-header/app-header';
-import '@polymer/app-layout/app-scroll-effects/effects/waterfall';
+import '@polymer/app-layout/app-scroll-effects/effects/material';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
 import { menuIcon } from './my-icons';
 import './snack-bar';
@@ -86,13 +86,6 @@ class MyApp extends connect(store)(LitElement) {
       background-color: var(--app-header-background-color);
       color: var(--app-header-text-color);
       border-bottom: 1px solid #eee;
-      --app-header-background-front-layer: {
-        background-position: center center;
-        background-image: url(images/header-bg-1600.jpg);
-      };
-      --app-header-background-rear-layer: {
-        background-color: var(--app-header-background-color);
-      };
     }
 
     /*.toolbar-top {
@@ -224,8 +217,21 @@ class MyApp extends connect(store)(LitElement) {
   protected render() {
     // Anything that's related to rendering should be done in here.
     return html`
+    <custom-style>
+      <style is="custom-style">
+        app-header {
+          --app-header-background-front-layer: {
+            background-position: center center;
+            background-image: url('images/header-bg-1600.jpg');
+          };
+          --app-header-background-rear-layer: {
+            background-color: var(--app-header-background-color);
+          };
+        }
+      </style>
+    </custom-style>
       <!-- Header -->
-      <app-header condenses reveals effects="waterfall">
+      <app-header condenses reveals effects="material">
         <app-toolbar class="toolbar-top">
           <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
           <div main-title>${this.appTitle}</div>
