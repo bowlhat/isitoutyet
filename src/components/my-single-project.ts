@@ -19,8 +19,6 @@ import { store, RootState } from '../store';
 import './push-notification-button';
 
 // These are the actions needed by this element.
-import { getProject } from '../actions/projects';
-import { getAllReleases } from '../actions/releases';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles';
@@ -32,28 +30,6 @@ import releases from '../reducers/releases';
 store.addReducers({
   projects,
   releases,
-});
-
-let currentProjectId = '';
-
-let acting = false;
-
-store.subscribe(() => {
-  if (!acting) {
-    acting = true;
-
-    const state: RootState = store.getState();
-    const projectId = state.app!.projectId;
-    
-    if (projectId && currentProjectId !== projectId) {
-      console.log('Single project: Fetch new project:', projectId);
-      store.dispatch(getProject(projectId));
-      store.dispatch(getAllReleases(projectId));
-      currentProjectId = projectId;
-    }
-
-    acting = false;
-  }
 });
 
 class MySingleProject extends connect(store)(PageViewElement) {

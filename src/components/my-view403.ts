@@ -14,15 +14,15 @@ import { PageViewElement } from './page-view-element';
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles';
 
-class MyView404 extends PageViewElement {
+class MyView403 extends PageViewElement {
   static styles = SharedStyles;
 
   protected render() {
     return html`
       <section>
-        <h2>Oops! You hit a 404</h2>
+        <h2>403: You are not permitted to view this page</h2>
         <p>
-          The page you're looking for doesn't seem to exist. Head back
+          The page you're looking for is forbidden. Head back
           <a href="/">home</a> and try again.
         </p>
       </section>
@@ -30,4 +30,4 @@ class MyView404 extends PageViewElement {
   }
 }
 
-window.customElements.define('my-view404', MyView404);
+window.customElements.define('my-view403', MyView403);

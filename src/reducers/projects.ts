@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { Reducer } from 'redux';
+
 import {
   GET_ALL_PROJECTS,
   GET_PROJECT,

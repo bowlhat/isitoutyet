@@ -16,6 +16,9 @@ import { installOfflineWatcher } from 'pwa-helpers/network';
 import { installRouter } from 'pwa-helpers/router';
 import { updateMetadata } from 'pwa-helpers/metadata';
 
+import { firebase } from '@firebase/app';
+// import { User } from '@firebase/auth-types';
+
 // This element is connected to the Redux store.
 import { store, RootState } from '../store';
 
@@ -25,6 +28,7 @@ import {
   updateOffline,
   updateDrawerState
 } from '../actions/app';
+import user, { UserState } from '../reducers/user';
 
 // The following line imports the type only - it will be removed by tsc so
 // another import for app-drawer.js is required below.
@@ -37,6 +41,10 @@ import '@polymer/app-layout/app-scroll-effects/effects/material';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
 import { menuIcon } from './my-icons';
 import './snack-bar';
+
+store.addReducers({
+  user
+});
 
 class MyApp extends connect(store)(LitElement) {
   @property({type: String})
@@ -53,6 +61,12 @@ class MyApp extends connect(store)(LitElement) {
 
   @property({type: Boolean})
   private _offline = false;
+
+  @property({type: Object})
+  private _user: UserState = {
+    user: undefined,
+    role: '',
+  };
 
   static styles = css`
     :host {
@@ -179,7 +193,7 @@ class MyApp extends connect(store)(LitElement) {
     }
 
     .copyright-logo {
-      background: url(https://bowlhat.net/wp-content/themes/bowlhat-freelance/images/logo.svg) center center no-repeat;
+      background: url('images/bowlhat-logo.svg') center center no-repeat;
       background-size: 80px 48px;
       width: 190px;
       height: 50px;
@@ -211,25 +225,34 @@ class MyApp extends connect(store)(LitElement) {
       [main-title] {
         padding-right: 0px;
       }
+
+      .pi {
+        font-size: 0.8rem;
+        text-align: right;
+      }
+      .pi button {
+        background: none;
+        border: none;
+      }
     }
   `;
 
   protected render() {
     // Anything that's related to rendering should be done in here.
     return html`
-    <custom-style>
-      <style is="custom-style">
-        app-header {
-          --app-header-background-front-layer: {
-            background-position: center center;
-            background-image: url('images/header-bg-1600.jpg');
-          };
-          --app-header-background-rear-layer: {
-            background-color: var(--app-header-background-color);
-          };
-        }
-      </style>
-    </custom-style>
+      <custom-style>
+        <style is="custom-style">
+          app-header {
+            --app-header-background-front-layer: {
+              background-position: center center;
+              background-image: url('images/header-bg-1600.jpg');
+            };
+            --app-header-background-rear-layer: {
+              background-color: var(--app-header-background-color);
+            };
+          }
+        </style>
+      </custom-style>
       <!-- Header -->
       <app-header condenses reveals effects="material">
         <app-toolbar class="toolbar-top">
@@ -264,6 +287,9 @@ class MyApp extends connect(store)(LitElement) {
         <my-single-release class="page" ?active="${this._page === 'single-release'}"></my-single-release>
         <my-privacy class="page" ?active="${this._page === 'privacy'}"></my-privacy>
         <my-terms class="page" ?active="${this._page === 'terms'}"></my-terms>
+        <my-admin class="page" ?active="${this._page === 'admin'}"></my-admin>
+        <my-admin-single-email class="page" ?active="${this._page === 'admin-single-email'}"></my-admin-single-email>
+        <my-view403 class="page" ?active="${this._page === 'view403'}"></my-view403>
         <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
       </main>
 
@@ -276,9 +302,14 @@ class MyApp extends connect(store)(LitElement) {
             <span>|</span>
             <a href="/terms">Terms</a>
             <span>|</span>
+            ${this._user && this._user.user && ['owner', 'admin'].includes(this._user.role) ? html`
+              <a href="/admin">Admin</a>
+              <span>|</span>
+            ` : ''}
             <span>© Daniel Llewellyn T/A Bowl Hat</span>
           </p>
           <p class="copyright-logo">Bowl Hat</p>
+          <p class="pi"><button @click="${() => this._signIn()}">π</button></p>
         </div>
       </footer>
 
@@ -326,7 +357,22 @@ class MyApp extends connect(store)(LitElement) {
     this._offline = state.app!.offline;
     this._snackbarOpened = state.app!.snackbarOpened;
     this._drawerOpened = state.app!.drawerOpened;
+    this._user = state.user.currentUser || { user: undefined, roles: [] };
   }
+
+  private _signIn() {
+    if (firebase.auth) {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider);
+    }
+  }
+
+  // private _signOut() {
+  //   if (firebase.auth) {
+  //     firebase.auth().signOut();
+  //   }
+  // }
+
 }
 
 window.customElements.define('my-app', MyApp);

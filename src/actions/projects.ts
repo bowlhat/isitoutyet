@@ -7,10 +7,9 @@ import { ProjectsList, Project } from '../reducers/projects';
 export const GET_ALL_PROJECTS = 'GET_ALL_PROJECTS';
 export const GET_PROJECT = 'GET_PROJECT';
 
-import {AppActionUpdatePage, UPDATE_PAGE} from './app';
 export interface ProjectsActionGetAllProjects extends Action<'GET_ALL_PROJECTS'> {projects: ProjectsList};
 export interface ProjectsActionGetProject extends Action<'GET_PROJECT'> {project: Project};
-export type ProjectsAction = AppActionUpdatePage | ProjectsActionGetAllProjects | ProjectsActionGetProject;
+export type ProjectsAction = ProjectsActionGetAllProjects | ProjectsActionGetProject;
 
 type ThunkResult = ThunkAction<void, RootState, undefined, ProjectsAction>;
 
@@ -37,7 +36,7 @@ export const getAllProjects: ActionCreator<ThunkResult> = () => async (dispatch)
     }
 };
 
-export const getProject: ActionCreator<ThunkResult> = (projectId) => async (dispatch) => {
+export const getProject: ActionCreator<ThunkResult> = (projectId: string) => async (dispatch) => {
     try {
         const snapshot = await firestore
             .collection('projects')
@@ -58,10 +57,5 @@ export const getProject: ActionCreator<ThunkResult> = (projectId) => async (disp
         });
     } catch (e) {
         console.log(`Error fetching project '${projectId}':`, e);
-        await import('../components/my-view404');
-        dispatch({
-            type: UPDATE_PAGE,
-            page: 'view404'
-        });
     }
 };

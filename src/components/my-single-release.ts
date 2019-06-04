@@ -16,50 +16,18 @@ import { PageViewElement } from './page-view-element';
 import { store, RootState } from '../store';
 
 // These are the actions needed by this element.
-import { getProject } from '../actions/projects';
-import { getRelease } from '../actions/releases';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles';
 import { Project } from '../reducers/projects';
 import { Release } from '../reducers/releases';
-import { Email } from '../reducers/email';
+import { Email } from '../reducers/emails';
 
 import projects from '../reducers/projects';
 import releases from '../reducers/releases';
 store.addReducers({
     projects,
     releases,
-});
-
-let currentProjectId = '';
-let currentReleaseId = '';
-
-let acting = false;
-
-store.subscribe(() => {
-    if (!acting) {
-        acting = true;
-        
-        const state: RootState = store.getState();
-        
-        const projectId = state.app!.projectId;
-        const releaseId = state.app!.releaseId;
-        
-        if (projectId && currentProjectId !== projectId) {
-            console.log('Single release: Fetch new project:', projectId);
-            store.dispatch(getProject(projectId));
-            currentProjectId = projectId;
-        }
-        
-        if (releaseId && currentReleaseId !== releaseId) {
-            console.log('Single release: Fetch new release:', releaseId);
-            store.dispatch(getRelease(projectId, releaseId));
-            currentReleaseId = releaseId;
-        }
-        
-        acting = false;
-    }
 });
 
 class MySingleRelease extends connect(store)(PageViewElement) {

@@ -16,7 +16,6 @@ import { PageViewElement } from './page-view-element';
 import { store, RootState } from '../store';
 
 // These are the actions needed by this element.
-import { getAllProjects } from '../actions/projects';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from './shared-styles';
@@ -75,10 +74,6 @@ class MyProjects extends connect(store)(PageViewElement) {
       </footer>
     </section>
     `;
-  }
-  
-  protected firstUpdated() {
-    store.dispatch(getAllProjects());
   }
   
   // This is called every time something is updated in the store.

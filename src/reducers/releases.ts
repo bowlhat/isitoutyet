@@ -9,13 +9,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { Reducer } from 'redux';
+import { Timestamp } from '@firebase/firestore-types';
+
 import {
   GET_ALL_RELEASES,
   GET_RELEASE,
 } from '../actions/releases';
 import { RootAction } from '../store';
 
-import {Email} from './email';
+import {Email} from './emails';
 
 export interface ReleasesState {
   releases: Release[];
@@ -26,7 +28,7 @@ export interface ReleasesState {
 export interface Release {
   beta?: string;
   codename?: string;
-  date?: firebase.firestore.Timestamp;
+  date?: Timestamp;
   email?: Email;
   id?: string;
   islts?: boolean;
