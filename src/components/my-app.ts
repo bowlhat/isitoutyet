@@ -17,7 +17,6 @@ import { installRouter } from 'pwa-helpers/router';
 import { updateMetadata } from 'pwa-helpers/metadata';
 
 import { firebase } from '@firebase/app';
-// import { User } from '@firebase/auth-types';
 
 // This element is connected to the Redux store.
 import { store, RootState } from '../store';

@@ -30,7 +30,7 @@ import app, { AppState } from './reducers/app';
 import { EmailsState } from './reducers/emails';
 import { ProjectsState } from './reducers/projects';
 import { ReleasesState } from './reducers/releases';
-import userReducer, { UserState } from './reducers/user';
+import { UserState } from './reducers/user';
 import { AppAction } from './actions/app';
 import { EmailsAction } from './actions/emails';
 import { ProjectsAction } from './actions/projects';
@@ -76,5 +76,4 @@ export const store = createStore(
 // Initially loaded reducers.
 store.addReducers({
   app,
-  userReducer,
 });
