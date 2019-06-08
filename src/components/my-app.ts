@@ -16,7 +16,7 @@ import { installOfflineWatcher } from 'pwa-helpers/network';
 import { installRouter } from 'pwa-helpers/router';
 import { updateMetadata } from 'pwa-helpers/metadata';
 
-import { firebase } from '@firebase/app';
+import { auth as FirebaseAuth, firebase } from '../firebase';
 
 // This element is connected to the Redux store.
 import { store, RootState } from '../store';
@@ -476,9 +476,9 @@ class MyApp extends connect(store)(LitElement) {
   }
 
   private _signIn() {
-    if (firebase.auth) {
+    if (firebase.auth && FirebaseAuth) {
       const provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider);
+      FirebaseAuth.signInWithPopup(provider);
     }
   }
 

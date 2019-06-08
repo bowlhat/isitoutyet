@@ -23,6 +23,19 @@
       "css": { "minify": true },
       "html": { "minify": true },
       "bundle": false,
+      "addServiceWorker": true,
+      "addPushManifest": true
+    },
+    {
+      "name": "esm-bundled",
+      "browserCapabilities": [
+        "es2015",
+        "modules"
+      ],
+      "js": { "minify": true },
+      "css": { "minify": true },
+      "html": { "minify": true },
+      "bundle": true,
       "addServiceWorker": true
     },
     {
