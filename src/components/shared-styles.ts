@@ -43,6 +43,14 @@ export const SharedStyles = css`
     }
   }
 
+  a,
+  a:active,
+  a:hover,
+  a:focus,
+  a:focus-within {
+    color: var(--app-light-text-color);
+  }
+
   .circle {
     display: block;
     width: 64px;

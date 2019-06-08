@@ -18,9 +18,14 @@ export const ButtonSharedStyles = css`
     border: none;
     cursor: pointer;
     padding: 1em 2em;
+    color: var(--app-dark-text-color);
   }
 
-  button:hover svg {
-    fill: var(--app-primary-color);
+  button:hover {
+    font-weight: bold;
+  }
+
+  button svg {
+    fill: var(--app-dark-text-color);
   }
 `;

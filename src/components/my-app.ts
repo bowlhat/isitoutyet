@@ -69,24 +69,38 @@ class MyApp extends connect(store)(LitElement) {
 
   static styles = css`
     :host {
+      --app-primary-color: #697277;
+      --app-secondary-color: #293237;
+      --app-header-background-color: gray;
+      --app-drawer-selected-color: #98b0bC;
+      --app-section-even-color: #f7f7f7;
+      --app-section-odd-color: white;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --app-primary-color: #f9fEf3;
+        --app-secondary-color: #a9b2b7;
+        --app-header-background-color: gray;
+        --app-drawer-selected-color: #78909C;
+        --app-section-even-color: #171717;
+        --app-section-odd-color: black;
+      }
+    }
+
+    :host {
       display: block;
 
       --app-drawer-width: 256px;
 
-      --app-primary-color: #E91E63;
-      --app-secondary-color: #293237;
       --app-dark-text-color: var(--app-secondary-color);
-      --app-light-text-color: white;
-      --app-section-even-color: #f7f7f7;
-      --app-section-odd-color: white;
+      --app-light-text-color: var(--app-primary-color);
 
-      --app-header-background-color: gray;
-      --app-header-text-color: var(--app-light-text-color);
-      --app-header-selected-color: var(--app-primary-color);
+      --app-header-text-color: #ffffff;
+      --app-header-selected-color: #ffffff;
 
       --app-drawer-background-color: var(--app-secondary-color);
       --app-drawer-text-color: var(--app-light-text-color);
-      --app-drawer-selected-color: #78909C;
     }
 
     app-header {
@@ -94,7 +108,6 @@ class MyApp extends connect(store)(LitElement) {
       top: 0;
       left: 0;
       width: 100%;
-      height: 240px;
       text-align: center;
       background-color: var(--app-header-background-color);
       color: var(--app-header-text-color);
@@ -165,10 +178,11 @@ class MyApp extends connect(store)(LitElement) {
     /* Workaround for IE11 displaying <main> as inline */
     main {
       display: block;
+      color: var(--app-dark-text-color);
+      background: var(--app-section-odd-color);
     }
 
     .main-content {
-      padding-top: 240px;
       min-height: 100vh;
     }
 
@@ -187,7 +201,11 @@ class MyApp extends connect(store)(LitElement) {
       text-align: center;
     }
 
-    footer a {
+    footer a,
+    footer a:active,
+    footer a:hover,
+    footer a:focus,
+    footer a:focus-within {
       color: var(--app-dark-text-color);
     }
 
@@ -200,23 +218,21 @@ class MyApp extends connect(store)(LitElement) {
       text-indent: -9999px;
     }
 
+    @media (prefers-color-scheme: dark) {
+      .copyright-logo {
+        filter: invert(100%);
+      }
+    }
+
     /* Wide layout: when the viewport width is bigger than 460px, layout
       changes to a wide layout */
     @media (min-width: 460px) {
-      app-header {
-        height: 500px;
-      }
-
       .toolbar-list {
         display: block;
       }
 
       .menu-btn {
         display: none;
-      }
-
-      .main-content {
-        padding-top: 507px;
       }
 
       /* The drawer button isn't shown in the wide layout, so we don't
@@ -234,6 +250,50 @@ class MyApp extends connect(store)(LitElement) {
         border: none;
       }
     }
+
+    /*@media (max-width: 319px) {*/
+      :host {
+        --app-header-height: 100px;
+      }
+    /*}*/
+
+    @media (min-width: 320px) and (max-width: 479px) {
+      :host {
+        --app-header-height: 150px;
+      }
+    }
+    @media (min-width: 480px) and (max-width: 639px) {
+      :host {
+        --app-header-height: 200px;
+      }
+    }
+    @media (min-width: 640px) and (max-width: 799px) {
+      :host {
+        --app-header-height: 250px;
+      }
+    }
+    @media (min-width: 800px) and (max-width: 1279px) {
+      :host {
+        --app-header-height: 400px;
+      }
+    }
+    @media (min-width: 1280px) and (max-width: 1599px) {
+      :host {
+        --app-header-height: 500px;
+      }
+    }
+    @media (min-width: 1600px) {
+      :host {
+        --app-header-height: 500px;
+      }
+    }
+
+    app-header {
+      height: var(--app-header-height);
+    }
+    .main-content {
+      padding-top: var(--app-header-height);
+    }
   `;
 
   protected render() {
@@ -249,6 +309,62 @@ class MyApp extends connect(store)(LitElement) {
             --app-header-background-rear-layer: {
               background-color: var(--app-header-background-color);
             };
+          }
+          @media (max-width: 319px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-320.jpg');
+              };
+            }
+          }
+          @media (min-width: 320px) and (max-width: 479px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-480.jpg');
+              };
+            }
+          }
+          @media (min-width: 480px) and (max-width: 639px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-640.jpg');
+              };
+            }
+          }
+          @media (min-width: 640px) and (max-width: 799px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-800.jpg');
+              };
+            }
+          }
+          @media (min-width: 800px) and (max-width: 1279px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-1280.jpg');
+              };
+            }
+          }
+          @media (min-width: 1280px) and (max-width: 1599px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-1600.jpg');
+              };
+            }
+          }
+          @media (min-width: 1600px) {
+            app-header {
+              --app-header-background-front-layer: {
+                background-position: center center;
+                background-image: url('images/header-bg-1600.jpg');
+              };
+            }
           }
         </style>
       </custom-style>
