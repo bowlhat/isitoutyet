@@ -1,0 +1,87 @@
+html {
+	--app-primary-color: #697277;
+	--app-secondary-color: #293237;
+	--app-header-background-color: gray;
+	--app-drawer-selected-color: #98b0bC;
+	--app-section-even-color: #f7f7f7;
+	--app-section-odd-color: white;
+	}
+
+@media (prefers-color-scheme: dark) {
+	html {
+		--app-primary-color: #f9fEf3;
+		--app-secondary-color: #a9b2b7;
+		--app-header-background-color: gray;
+		--app-drawer-selected-color: #78909C;
+		--app-section-even-color: #171717;
+		--app-section-odd-color: black;
+	}
+}
+
+html {
+	display: block;
+
+	--app-drawer-width: 256px;
+
+	--app-dark-text-color: var(--app-secondary-color);
+	--app-light-text-color: var(--app-primary-color);
+
+	--app-header-text-color: #ffffff;
+	--app-header-selected-color: #ffffff;
+
+	--app-drawer-background-color: var(--app-secondary-color);
+	--app-drawer-text-color: var(--app-light-text-color);
+}
+
+@font-face {
+	font-family: 'Pacifico';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Pacifico Regular'), local('Pacifico-Regular'), url('https://fonts.gstatic.com/s/pacifico/v12/Q_Z9mv4hySLTMoMjnk_rCXYhjbSpvc47ee6xR_80Hnw.woff2') format('woff2');
+	/* The browser draws the text immediately in the fallback font if the font
+	   isn't loaded, then swaps it with the webfont when it eventually loads
+	   See: https://developers.google.com/web/updates/2016/02/font-display
+	*/
+	font-display: swap;
+}
+
+body {
+	margin: 0;
+	font-family: Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--app-primary-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0 0 0.5em 0;
+	font-weight: 400;
+	line-height: 1.2;
+}
+
+h1 {
+	font-size: 2em;
+}
+
+a {
+	color: inherit;
+}
+
+code {
+	font-family: menlo, inconsolata, monospace;
+	font-size: calc(1em - 2px);
+	color: var(--app-dark-text-color);
+	background-color: var(--app-section-even-color);
+	padding: 0.2em 0.4em;
+	border-radius: 2px;
+}
+
+@media (min-width: 400px) {
+	body {
+		font-size: 16px;
+	}
+}
+
+#sapper {
+	background: var(--app-section-odd-color)
+}

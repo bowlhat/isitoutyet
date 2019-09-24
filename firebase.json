@@ -1,0 +1,59 @@
+{
+  "functions": {
+    "predeploy": [
+      "npm install",
+      "npm run build",
+      "npm prune --production"
+    ],
+    "source": ".",
+    "ignore": [
+      ".git/**",
+      "cypress",
+      "src/**"
+    ]
+  },
+  "hosting": {
+    "public": "static",
+    "rewrites": [
+      {
+        "source": "/api/talkies/dialogflow",
+        "function": "DialogflowHandler"
+      },
+      {
+        "source": "/api/talkies/raw",
+        "function": "TalkieAPIHandler"
+      },
+      {
+        "source": "/api/inbound-email",
+        "function": "EmailReceiveHandler"
+      },
+      {
+        "source": "/api/inbound-email-authorize",
+        "function": "EmailSPFHandler"
+      },
+      {
+        "source": "/api/push/register",
+        "function": "RegisterForPush"
+      },
+      {
+        "source": "/api/push/unregister",
+        "function": "UnregisterFromPush"
+      },
+      {
+        "source": "**",
+        "function": "server"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/firebase-messaging-sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ]
+  }
+}
