@@ -1,10 +1,32 @@
 <script context="module">
-	export async function preload({ params, query }) {
-        const res = await this.fetch(`/projects/${params.project}/${params.release}.json`);
+    import {firestore} from '../../../firebase';
+    
+    export async function preload({ params, query }) {
+        let db = await firestore();
+		let projectQuery = db
+            .collection('projects')
+            .doc(params.project);
+        let project = await projectQuery.get();
+        let release = await projectQuery
+            .collection('releases')
+            .doc(params.release)
+            .get();
+        let email = (await release.data().email.get()).data();
 
-		if (res.status === 200) {
-			return await res.json();
-		}
+        return {
+            project: {
+                ...project.data(),
+                slug: project.id,
+            },
+            release: {
+                ...release.data(),
+                date: release.data().date.toDate(),
+                email: {
+                    ...email,
+                    received: email.received ? email.received.toDate() : data.date.toDate(),
+                },
+            },
+        }
 	}
 </script>
 

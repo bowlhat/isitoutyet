@@ -1,10 +1,30 @@
 <script context="module">
+    import {firestore} from '../../../firebase';
 	export async function preload({ params, query }) {
-        const res = await this.fetch(`/projects/${params.project}.json`);
+        let db = await firestore();
+		let projectQuery = db
+            .collection('projects')
+            .doc(params.project);
+        let project = await projectQuery.get();
+        let releases = await projectQuery
+            .collection('releases')
+            .orderBy('date', 'desc')
+            .get();
 
-		if (res.status === 200) {
-			return await res.json();
-		}
+        return {
+            project: {
+                ...project.data(),
+                slug: project.id,
+            },
+            releases: releases.docs.map(release => {
+                const data = release.data();
+                return {
+                    ...data,
+                    email: data.email.id,
+                    id: release.id,
+                }
+            }),
+        };
 	}
 </script>
 
@@ -22,9 +42,6 @@
         display: grid;
         grid-auto-rows: 1fr;
         align-items: center;
-    }
-    header button {
-        height: 3em;
     }
     .list {
         list-style: none;

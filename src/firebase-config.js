@@ -1,4 +1,4 @@
-export default {
+export const firebaseConfig = {
     "projectId": "iioy-191b9",
     "appId": "1:811381179583:web:eaaa0ed29a54150279320a",
     "databaseURL": "https://iioy-191b9.firebaseio.com",

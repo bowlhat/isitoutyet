@@ -1,12 +1,14 @@
 <script context="module">
-	export async function preload({ params, query }) {
-		const res = await this.fetch(`/projects.json`);
-		const json = await res.json();
-		const projects = Object.keys(json).map(key => json[key]);
+	import {firestore} from '../firebase';
 
-		if (res.status === 200) {
-			return { projects };
-		}
+	export async function preload({ params, query }) {
+		let db = await firestore();
+		let snapshot = await db.collection('projects').get();
+		let projects = snapshot.docs.map(item => ({
+            ...item.data(),
+            slug: item.id,
+		}));
+		return {projects};
 	}
 </script>
 
