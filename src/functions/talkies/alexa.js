@@ -1,7 +1,7 @@
-import alexa from 'alexa-app';
-import { versionForProject } from './common';
+export const Alexa = async app => {
+  const alexa = await import('alexa-app');
+  const {versionForProject} = await import('./common');
 
-export const Alexa = app => {
   const alexaApp = new alexa.app('iioy'); // eslint-disable-line new-cap
   alexaApp.express({
     expressApp: app,

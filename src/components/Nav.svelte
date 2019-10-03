@@ -1,12 +1,17 @@
 <script>
+	import {getContext} from 'svelte';
+    import {Authentication} from '../components/Authentication';
+	import {UserInfo} from '../stores';
 	export let segment;
+
+	const {signOut} = getContext(Authentication);
 </script>
 
 <style>
 	nav {
 		border-bottom: 1px solid rgba(255,62,0,0.1);
 		font-weight: 300;
-		padding: 0 1em;
+		padding: 0 1rem;
 	}
 
 	ul {
@@ -34,7 +39,7 @@
 	.selected::after {
 		position: absolute;
 		content: '';
-		width: calc(100% - 1em);
+		width: calc(100% - 1rem);
 		height: 2px;
 		background-color: rgb(255,62,0);
 		display: block;
@@ -43,7 +48,7 @@
 
 	a {
 		text-decoration: none;
-		padding: 1em 0.5em;
+		padding: 1rem 0.5rem;
 		display: block;
 	}
 </style>
@@ -53,4 +58,8 @@
 		<li><a class='{segment === undefined ? "selected" : ""}' href='.'>home</a></li>
 		<li><a class='{segment === "about" ? "selected" : ""}' href='about'>about</a></li>
 	</ul>
+	{#if $UserInfo.isLoggedIn}
+		<span>{$UserInfo.displayName}</span>
+		<a href="javascript:" on:click={signOut}>Logout</a>
+	{/if}
 </nav>

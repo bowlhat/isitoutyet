@@ -10,7 +10,6 @@
 
 	%sapper.base%
 
-
 	<link rel='stylesheet' href='global.css'>
 	<link rel='manifest' href='manifest.json'>
 	<link rel="icon" href="images/favicon.ico">
@@ -41,14 +40,15 @@
      <!-- Default twitter cards -->
      <meta name="twitter:card" content="summary">
      <meta name="twitter:site" content="@askisitoutyet">
-     <meta property="og:type" content="website">
      <meta property="og:site_name" content="Is it out yet?">
      <meta property="og:image" content="images/manifest/misc/mstile-144x144.png" />
+     <meta itemprop="image" content="images/manifest/misc/mstile-144x144.png">
 
 	<!-- Sapper generates a <style> tag containing critical CSS
 	     for the current page. CSS for the rest of the app is
 	     lazily loaded when it precaches secondary pages -->
 	%sapper.styles%
+     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/4.2.0/firebaseui.css" />
 
 	<!-- This contains the contents of the <svelte:head> component, if
 	     the current page has one -->
@@ -58,15 +58,20 @@
 	<!-- The application will be rendered inside this element,
 	     because `src/client.js` references it -->
 	<div id='sapper'>%sapper.html%</div>
+     
+     <script src="/__/firebase/7.0.0/firebase-app.js"></script>
+     <script src="/__/firebase/7.0.0/firebase-analytics.js"></script>
+     <script src="/__/firebase/7.0.0/firebase-auth.js"></script>
+     <script src="/__/firebase/7.0.0/firebase-firestore.js"></script>
+     <script src="/__/firebase/7.0.0/firebase-messaging.js"></script>
+     <script src="/__/firebase/7.0.0/firebase-performance.js"></script>
+     <script src="/__/firebase/7.0.0/firebase-remote-config.js"></script>
+     <script src="https://cdn.firebase.com/libs/firebaseui/4.2.0/firebaseui.js"></script>
 
 	<!-- Sapper creates a <script> tag containing `src/client.js`
 	     and anything else it needs to hydrate the app and
 	     initialise the router -->
      %sapper.scripts%
-     
-     <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-app.js"></script>
-     <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-firestore.js"></script>
-     <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-messaging.js"></script>
-     
+
 </body>
 </html>

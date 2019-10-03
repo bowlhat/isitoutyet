@@ -1,3 +1,7 @@
-const server = require('./__sapper__/build/server/server');
+const dev = process.env.IIOY_DEV === 'true';
 
-module.exports = server;
+if (dev) {
+    module.exports = require('./__sapper__/dev/server/server');
+} else {
+    module.exports = require('./__sapper__/build/server/server');
+}

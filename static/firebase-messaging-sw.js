@@ -1,6 +1,6 @@
 try {
-    importScripts('https://www.gstatic.com/firebasejs/6.6.0/firebase-app.js');
-    importScripts('https://www.gstatic.com/firebasejs/6.6.0/firebase-messaging.js');
+    importScripts('/__/firebase/7.0.0/firebase-app.js');
+    importScripts('/__/firebase/7.0.0/firebase-messaging.js');
 
     firebase.initializeApp({
         'messagingSenderId': '811381179583'
@@ -18,4 +18,6 @@ try {
         return self.registration.showNotification(notificationTitle,
             notificationOptions);
     });
-} catch(e) {}
+} catch(e) {
+    console.log('[firebase-messaging] Error', e);
+}

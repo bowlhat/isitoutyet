@@ -1,10 +1,24 @@
 <svelte:head>
-	<title>About</title>
+	<link rel="canonical" href="https://isitoutyet.info/about"/>
+
+	<meta property="og:type" content="article"/>
+
+	<title>About Is it out yet?</title>
+	<meta name="description"
+		content="All about Is it out yet? the release-tracking app that tells you when your favourite project releases a new version"/>
+
+	<meta property="og:title" content="About Is it out yet?"/>
+	<meta property="og:description"
+		content="All about Is it out yet? the release-tracking app that tells you when your favourite project releases a new version"/>
+
+	<meta property="twitter:title" content="About @askisitoutyet"/>
+	<meta property="twitter:description"
+		content="All about @askisitoutyet, the release-tracking app that tells you when your favourite project releases a new version"/>
 </svelte:head>
 
 <section>
 	<nav>
-		<a href="/projects">
+		<a href="/">
 			&laquo; Back to all projects
 		</a>
 	</nav>

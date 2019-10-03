@@ -42,6 +42,8 @@ self.addEventListener('fetch', event => {
 	// ignore dev server requests
 	if (url.hostname === self.location.hostname && url.port !== self.location.port) return;
 
+	if (url.pathname === 'firebase-messaging-sw.js') return;
+
 	// always serve static files and bundler-generated assets from cache
 	if (url.host === self.location.host && cached.has(url.pathname)) {
 		event.respondWith(caches.match(event.request));

@@ -1,0 +1,8 @@
+{
+    "description": "Ubuntu is an open source software operating system that runs from the desktop, to the cloud, to all your internet connected things",
+    "homepage": "https://ubuntu.com",
+    "logo": "https://images.isitoutyet.info/project-logos/ubuntu.png",
+    "name": "Ubuntu",
+    "regex": "^(?:[Aa]nnouncing[:]? *)?(?:[Tt]he *(?:(?<rctext>(?:[Rr]elease )?[Cc]andidate)(?: for)?)? *)?[Uu]buntu *(?<version>\\d{1,2}\\.\\d\\d(?:\\.\\d+)?) *(?:(?<lts>[Ll][Tt][Ss]) *)?(?:[\"'(](?<codename>[^\"')]+)[\"')] *)?(?:[\"'(]?(?<betatext>(?:(?:[Ff][Ii][Rr][Ss][Tt])|(?:[Ss][Ee][Cc][Oo][Nn][Dd])|(?:[Tt][Hh][Ii][Rr][Dd])|(?:[Ff][Ii][Nn][Aa][Ll]))? *(?:(?:[Rr][Ee][Ll][Ee][Aa][Ss][Ee] [Cc][Aa][Nn][Dd][Ii][Dd][Aa][Tt][Ee])|(?:[Bb][Ee][Tt][Aa]))?(?: *\\d+)?)[\"')]? *)?(?:[(](?<codename2>[^()]+)[)] *)?",
+    "toaddress": "ubuntu-announce@lists.ubuntu.com"
+}

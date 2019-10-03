@@ -1,10 +1,11 @@
 import * as functions from 'firebase-functions';
 import {DialogFlow} from './dialogflow';
-import {versionForProject} from './common';
 
 export const DialogflowHandler = functions.https.onRequest(DialogFlow);
 
 export const TalkieAPIHandler = functions.https.onRequest(async (req, res) => {
+    const {versionForProject} = await import('./common');
+
     let project = req.query.project || '';
     let version = req.query.version || '';
 

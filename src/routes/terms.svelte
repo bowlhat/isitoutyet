@@ -1,11 +1,25 @@
 <svelte:head>
-	<title>Terms of service</title>
+    <link rel="canonical" href="https://isitoutyet.info/terms"/>
+
+	<meta property="og:type" content="article"/>
+
+	<title>Is it out yet? Terms of service</title>
+	<meta name="description"
+		content="Terms of service for Is it out yet? the release-tracking app"/>
+
+	<meta property="og:title" content="Is it out yet? Terms of service"/>
+	<meta property="og:description"
+		content="Terms of service for Is it out yet? the release-tracking app"/>
+
+	<meta property="twitter:title" content="@askisitoutyet Terms of service"/>
+	<meta property="twitter:description"
+		content="Terms of service for @askisitoutyet, the release-tracking app"/>
 </svelte:head>
 
 <section>
     <header>
         <nav>
-            <a href="/projects">
+            <a href="/">
                 &laquo; Back to all projects
             </a>
         </nav>

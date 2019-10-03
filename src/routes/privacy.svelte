@@ -1,10 +1,24 @@
 <svelte:head>
-	<title>Privacy information</title>
+    <link rel="canonical" href="https://isitoutyet.info/privacy"/>
+
+	<meta property="og:type" content="article"/>
+
+	<title>Is it out yet? Privacy information</title>
+	<meta name="description"
+		content="Privacy information for Is it out yet? the release-tracking app"/>
+
+	<meta property="og:title" content="Is it out yet? Privacy information"/>
+	<meta property="og:description"
+		content="Privacy information for Is it out yet? the release-tracking app"/>
+
+	<meta property="twitter:title" content="@askisitoutyet Privacy information"/>
+	<meta property="twitter:description"
+		content="Privacy information for @askisitoutyet, the release-tracking app"/>
 </svelte:head>
 
 <section>
     <nav>
-        <a href="/projects">
+        <a href="/">
             &laquo; Back to all projects
         </a>
     </nav>
@@ -16,8 +30,8 @@
 <section>
     <h3>Effective Dates</h3>
     <p>
-        This policy covers from 12th February 2019 until superceded by a new document with a
-        later date shown in this paragraph.
+        This policy covers from <time datetime="2019-02-12">12th February 2019</time>
+        until superceded by a new document with a later date shown in this paragraph.
     </p>
 </section>
 

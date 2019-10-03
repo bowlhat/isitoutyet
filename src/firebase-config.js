@@ -1,10 +1,10 @@
 export const firebaseConfig = {
-    "projectId": "iioy-191b9",
-    "appId": "1:811381179583:web:eaaa0ed29a54150279320a",
-    "databaseURL": "https://iioy-191b9.firebaseio.com",
-    "storageBucket": "iioy-191b9.appspot.com",
-    "locationId": "us-central",
-    "apiKey": "AIzaSyBMwSsBbeVu3wII6NGxftzSUffyR_MnR2o",
-    "authDomain": "iioy-191b9.firebaseapp.com",
-    "messagingSenderId": "811381179583"
+    apiKey: "AIzaSyA9TmyHbDvYCy9AJT3p-uh5D0xLPX8OHPI",
+    authDomain: "iioy-191b9.firebaseapp.com",
+    databaseURL: "https://iioy-191b9.firebaseio.com",
+    projectId: "iioy-191b9",
+    storageBucket: "iioy-191b9.appspot.com",
+    messagingSenderId: "811381179583",
+    appId: "1:811381179583:web:eaaa0ed29a54150279320a",
+    measurementId: "G-M3PVJ646S3"
 };

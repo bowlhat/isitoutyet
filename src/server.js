@@ -1,26 +1,34 @@
 import * as functions from 'firebase-functions';
 
-import sirv from 'sirv';
-import express from 'express';
-import compression from 'compression';
-import * as sapper from '@sapper/server';
+let server;
+export * from './functions';
 
-const { PORT, NODE_ENV } = process.env;
-const dev = NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === 'development';
+if (dev && process.env.IIOY_DEV !== 'true') {
+	(async function() {
+		const sirv = require('sirv');
+		const express = require('express');
+		const compression = require('compression');
+		const sapper = await import('@sapper/server');
 
-const app = express() // You can also use Express
-	.use(compression({ threshold: 0 }))
-	.use(sirv('static', { dev }))
-	.use(sapper.middleware())
-if (PORT) {
-	app.listen(PORT, err => {
-		if (err) console.log('error', err);
-	})
+		const app = express() // You can also use Express
+		app.use(compression({ threshold: 0 }))
+		app.use(sirv('static', {dev}))
+		app.use(sapper.middleware())
+		app.listen(3000, err => {
+			if (err) console.log('error', err);
+		})
+	}());
+}
+else {
+	server = functions.runWith({
+		timeoutSeconds: 45,
+		memory: '256MB',
+	}).https.onRequest(async (req, res) => {
+		const sapper = await import('@sapper/server');
+		req.baseUrl = '';
+		return sapper.middleware()(req, res);
+	});
 }
 
-export const server = functions.runWith({
-	timeoutSeconds: 45,
-	memory: '256MB',
-}).https.onRequest(app);
-
-export * from './functions';
+export {server};

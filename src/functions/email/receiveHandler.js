@@ -13,44 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import XRegExp from 'xregexp';
-import uuid from 'uuid/v4';
-import {admin, functions, firestore} from '../firebase';
-import { abortEmail, acceptEmail } from './responders';
-
-const months = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
-const noHeaders = 'No eMail Headers present message';
-
-let EMAIL_BASIC_AUTH = '';
-if (functions.config().emailhandler) {
-  EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
-}
-const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
-
-let FCM_PRIVATE_KEY = '';
-if (functions.config().webpush) {
-  FCM_PRIVATE_KEY = functions.config().webpush.fcmprivatekey || '';
-}
-
-const projects = firestore.collection('projects');
-const emails = firestore.collection('emails');
+import * as functions from 'firebase-functions';
 
 export const ReceiveHandler = async (request, response) => {
+  const XRegExp = await import('xregexp');
+  const uuid = await import('uuid/v4');
+  const {abortEmail, acceptEmail} = await import('./responders');
+  
+  const {firebaseFirestore} = await import('../../firebase');
+  const firestore = firebaseFirestore();
+
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  
+  const noHeaders = 'No eMail Headers present message';
+  
+  let EMAIL_BASIC_AUTH = '';
+  if (functions.config().emailhandler) {
+    EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
+  }
+  const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
+  
+  const projects = firestore.collection('projects');
+  const emails = firestore.collection('emails');
+  
   const transactionId = uuid();
 
   const match = CREDENTIALS_REGEXP.exec(request.headers.authorization || '');
@@ -128,6 +126,7 @@ export const ReceiveHandler = async (request, response) => {
 
           const releases = doc.ref.collection('releases');
 
+          await releases
           await releases.doc(releaseUUID).set({
             date,
             version,
@@ -136,35 +135,6 @@ export const ReceiveHandler = async (request, response) => {
             beta: preRelInfo,
             email: email,
           });
-          const name = `${project['name']}${version && ` ${version}`}${codename && ` ${codename}`}${islts && ' LTS'}${preRelInfo && ` ${preRelInfo}`}`.trim();
-          const body = `${name} has just been released!`;
-          const icon = project['logo'];
-          try {
-            const response = await admin.messaging().send({
-              topic: doc.id,
-              notification: {
-                title: 'Is it out yet? Yes it is!',
-                body,
-              },
-              // android: {
-              //   collapseKey: 'newRelease',
-              //   notification: {
-              //     clickAction: '',
-              //     icon,
-              //   },
-              // },
-              webpush: {
-                notification: {
-                  clickAction: `https://isitoutyet.info/project/${project['slug']}/${releaseUUID}`,
-                  icon,
-                },
-              },
-            });
-            console.log('Receive email: Successfully sent push message:', response);
-          }
-          catch (e) {
-            console.log('Receive email: Error sending push message:', e);
-          }
         }
       }
     });

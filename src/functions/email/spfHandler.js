@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import uuid from 'uuid/v4';
 import * as functions from 'firebase-functions';
 
-import { abortEmail, rejectEmail, authorizeEmail } from './responders';
+export const SpfHandler = async (request, response) => {
+  const uuid = await import('uuid/v4');
+  
+  const {abortEmail, rejectEmail, authorizeEmail} = await import('./responders');
+  
+  let EMAIL_BASIC_AUTH = '';
+  if (functions.config().emailhandler) {
+    EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
+  }
+  const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
+  
 
-let EMAIL_BASIC_AUTH = '';
-if (functions.config().emailhandler) {
-  EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
-}
-const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
-
-export const SpfHandler = (request, response) => {
   const transactionId = uuid();
 
   const fields = request.body;

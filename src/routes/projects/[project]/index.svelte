@@ -1,7 +1,7 @@
 <script context="module">
-    import {firestore} from '../../../firebase';
+    import {firebaseFirestore} from '../../../firebase';
 	export async function preload({ params, query }) {
-        let db = await firestore();
+        let db = firebaseFirestore();
 		let projectQuery = db
             .collection('projects')
             .doc(params.project);
@@ -62,13 +62,26 @@
 </style>
 
 <svelte:head>
-	<title>Is {project.name} out yet?</title>
 	<link rel="canonical" href="https://isitoutyet.info/projects/{project.slug}"/>
+
+	<meta property="og:type" content="article"/>
+
+    <title>Is {project.name} out yet?</title>
+	<meta name="description"
+		content="Latest releases information for {project.name}. Is it out yet? Find out now!"/>
+
+	<meta property="og:title" content="Is {project.name} out yet?"/>
+	<meta property="og:description"
+		content="Latest releases information for {project.name}. Is it out yet? Find out now!"/>
+
+	<meta property="twitter:title" content="@askisitoutyet about {project.name}"/>
+	<meta property="twitter:description"
+		content="Latest releases information for {project.name}. @askisitoutyet now!"/>
 </svelte:head>
 
 <section>
     <nav>
-        <a href="/projects">
+        <a href="/">
             &laquo; Back to all projects
         </a>
     </nav>
@@ -84,7 +97,10 @@
         <PushNotificationButton project={project.slug} />
         {#if project.logo}
             <div class="logo">
-                <img src={project.logo} alt="{project.name} logo" loading="lazy" />
+                <img width="200" height="200"
+                    src={project.logo}
+                    alt="{project.name} logo"
+                    loading="lazy" />
             </div>
         {/if}
         <p>{project.description}</p>

@@ -1,19 +1,19 @@
-import {WebhookClient, Card, Text} from 'dialogflow-fulfillment';
 import * as functions from 'firebase-functions';
 
-import { versionForProject } from './common';
+export const DialogFlow = async (request, response) => {
+  const {WebhookClient, Card, Text} = await import('dialogflow-fulfillment');
+  const {versionForProject} = await import('./common');
+  
+  let DIALOGFLOW_BASIC_AUTH = '';
+  if (functions.config().dialogflow) {
+    DIALOGFLOW_BASIC_AUTH = functions.config().dialogflow.basicauth || '';
+  }
+  const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
+  
+  const sorry = {
+    fulfillmentText: `Sorry, I can't help you with that..`,
+  };
 
-let DIALOGFLOW_BASIC_AUTH = '';
-if (functions.config().dialogflow) {
-  DIALOGFLOW_BASIC_AUTH = functions.config().dialogflow.basicauth || '';
-}
-const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
-
-const sorry = {
-  fulfillmentText: `Sorry, I can't help you with that..`,
-};
-
-export const DialogFlow = (request, response) => {
   const match = CREDENTIALS_REGEXP.exec(request.headers.authorization);
   if (DIALOGFLOW_BASIC_AUTH && (!match || match[1] !== DIALOGFLOW_BASIC_AUTH)) {
     return response.status(403).send('Unauthorized');

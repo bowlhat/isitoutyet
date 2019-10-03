@@ -1,4 +1,11 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "emulators": {
+    "firestore": {}
+  },
   "functions": {
     "predeploy": [
       "npm install",
@@ -38,6 +45,10 @@
       {
         "source": "/api/push/unregister",
         "function": "UnregisterFromPush"
+      },
+      {
+        "source": "/api/internal/__populatedb",
+        "function": "PopulateEmulatorDb"
       },
       {
         "source": "**",

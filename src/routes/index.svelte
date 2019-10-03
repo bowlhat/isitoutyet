@@ -1,8 +1,8 @@
 <script context="module">
-	import {firestore} from '../firebase';
+	import {firebaseFirestore} from '../firebase';
 
 	export async function preload({ params, query }) {
-		let db = await firestore();
+		let db = firebaseFirestore();
 		let snapshot = await db.collection('projects').get();
 		let projects = snapshot.docs.map(item => ({
             ...item.data(),
@@ -55,8 +55,21 @@
 </style>
 
 <svelte:head>
-	<title>Tracked Projects</title>
-	<link rel="canonical" href="https://isitoutyet.info/projects"/>
+	<link rel="canonical" href="https://isitoutyet.info/"/>
+
+	<meta property="og:type" content="website"/>
+
+	<title>Is it out yet? Home</title>
+	<meta name="description"
+		content="Is it out yet? The release-tracking app that can answer the question!"/>
+
+	<meta property="og:title" content="Is it out yet? Home"/>
+	<meta property="og:description"
+		content="Is it out yet? The release-tracking app that can answer the question!"/>
+
+	<meta property="twitter:title" content="@askisitoutyet Home"/>
+	<meta property="twitter:description"
+		content="@askisitoutyet: The release-tracking app that can answer the question!"/>
 </svelte:head>
 
 <section>
@@ -68,7 +81,10 @@
 				</h2>
 				{#if item.logo}
 					<a href="/projects/{item.slug}">
-						<img src={item.logo} alt="{item.name} logo" loading="lazy" />
+						<img width="200" height="200"
+							src={item.logo}
+							alt="{item.name} logo"
+							loading="lazy" />
 					</a>
 				{/if}
 			</div>

@@ -1,8 +1,8 @@
 <script context="module">
-    import {firestore} from '../../../firebase';
+    import {firebaseFirestore} from '../../../firebase';
     
     export async function preload({ params, query }) {
-        let db = await firestore();
+        let db = firebaseFirestore();
 		let projectQuery = db
             .collection('projects')
             .doc(params.project);
@@ -11,7 +11,37 @@
             .collection('releases')
             .doc(params.release)
             .get();
-        let email = (await release.data().email.get()).data();
+
+        let emailField = release.data().email
+        let email
+        if (emailField.get) {
+            email = (await emailField.get()).data();
+        }
+        else if (typeof emailField === 'string') {
+            email = (await db.doc(emailField).get()).data()
+        }
+
+        let dateField = release.data().date
+        let date
+        if (dateField.toDate) {
+            date = dateField.toDate()
+        }
+        else if (typeof dateField === 'string') {
+            date = new Date(dateField)
+        }
+
+        let receivedField = email.received
+        let received
+        if (receivedField) {
+            if (receivedField.toDate) {
+                received = receivedField.toDate()
+            }
+            else if (typeof receivedField === 'string') {
+                received = new Date(receivedField)
+            }
+        } else {
+            received = date
+        }
 
         return {
             project: {
@@ -20,10 +50,10 @@
             },
             release: {
                 ...release.data(),
-                date: release.data().date.toDate(),
+                date,
                 email: {
                     ...email,
-                    received: email.received ? email.received.toDate() : data.date.toDate(),
+                    received,
                 },
             },
         }
@@ -45,14 +75,16 @@
     
     let email = {};
 
+    let reldate = epoch
     $: {
-        let reldate = new Date(release.date) || epoch;
+        reldate = new Date(release.date) || epoch;
         releaseDate = reldate.toDateString();
         releaseTime = reldate.toTimeString();
     }
+    let recdate = epoch
     $: {
         email = release.email;
-        let recdate = new Date(email.received) || epoch;
+        recdate = new Date(email.received) || epoch;
         emailDate = recdate.toDateString();
         emailTime = recdate.toTimeString();
     }
@@ -65,11 +97,39 @@
         word-wrap: break-word;
         word-break: break-word;
     }
+    .donate {
+		line-height: 1.8em;
+	}
+	.donate img {
+		vertical-align: bottom;
+	}
 </style>
 
 <svelte:head>
-	<title>Release information for {project.name} {release.version} {release.islts ? 'LTS' : ''} {release.codename} {release.beta}</title>
 	<link rel="canonical" href="https://isitoutyet.info/projects/{project.slug}"/>
+
+	<meta property="og:type" content="article"/>
+
+    <title>{project.name} {release.version} {release.islts ? 'LTS' : ''} {release.codename} {release.beta} is out now!</title>
+	<meta name="description"
+		content="Is it out yet? tracked the release of {project.name} {release.version}
+            {release.islts ? 'LTS' : ''} {release.codename} {release.beta} on
+            {reldate.getFullYear()}-{reldate.getMonth()}-{reldate.getDate()} at
+            {reldate.getHours()}:{reldate.getMinutes()}"/>
+
+	<meta property="og:title" content="{project.name} {release.version} {release.islts ? 'LTS' : ''} {release.codename} {release.beta} is out now!"/>
+	<meta property="og:description"
+		content="Is it out yet? tracked the release of {project.name} {release.version}
+            {release.islts ? 'LTS' : ''} {release.codename} {release.beta} on
+            {reldate.getFullYear()}-{reldate.getMonth()}-{reldate.getDate()} at
+            {reldate.getHours()}:{reldate.getMinutes()}"/>
+
+	<meta property="twitter:title" content="{project.name} {release.version} {release.islts ? 'LTS' : ''} {release.codename} {release.beta} is out now!"/>
+	<meta property="twitter:description"
+		content="@askisitoutyet tracked the release of {project.name} {release.version}
+            {release.islts ? 'LTS' : ''} {release.codename} {release.beta} on
+            {reldate.getFullYear()}-{reldate.getMonth()}-{reldate.getDate()} at
+            {reldate.getHours()}:{reldate.getMinutes()}"/>
 </svelte:head>
 
 <section>
@@ -89,10 +149,16 @@
 
 <section>
     <article>
-        <p>Release date: {releaseDate} {releaseTime}</p>
-        <p>Email received: {emailDate} {emailTime}</p>
+        <p><time datetime={reldate.toISOString()}>Release date: {releaseDate} {releaseTime}</time></p>
         <p>Subject: {email && email.subject ? email.subject : ''}</p>
-        <p class="donate">Your donations keep us afloat. Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> to continued maintenance of this project.</p>
+        <p class="donate">
+            Your donations keep us afloat. Please
+            <a href="https://liberapay.com/diddledan/donate">
+                <img alt="Donate using Liberapay"
+                    src="https://liberapay.com/assets/widgets/donate.svg">
+            </a>
+            to continued maintenance of this project.
+        </p>
         <code>
             {#if (email && email.body)}
                 {#each email.body.split(/\r\n\r\n|\n\n|\r\r/) as paragraph}

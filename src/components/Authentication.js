@@ -1,0 +1,3 @@
+const Authentication = {};
+
+export {Authentication};

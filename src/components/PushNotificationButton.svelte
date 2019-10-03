@@ -1,6 +1,6 @@
 <script>
 import {onMount} from 'svelte';
-import {messaging} from '../firebase.js';
+import {firebaseMessaging} from '../firebase.js';
 
 export let twoButtonMode = false;
 export let project;
@@ -30,51 +30,55 @@ function storageAvailable(type) {
 }
 let localStorageActive = false;
 
-const minusIcon      = `<svg height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 11v2h10v-2H7zm5-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
-const plusIcon       = `<svg height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
-const notifyText     = 'Notify me of new releases!';
-const stopNotifyText = 'Stop notifying me';
-
 let subscribed = false;
 let disabled = true;
 
 $: disabled = !project && !!localStorageActive;
-
 onMount(() => {
     localStorageActive = storageAvailable('localStorage');
     subscribed = localStorageActive && localStorage.getItem(project) === 'subscribed';
 });
 
 async function subscribe() {
+    if (!project) {
+        console.log('Cannot subscribe to push notifications because: No project.');
+        return;
+    }
     if (!localStorageActive) {
-        console.log('Cannot save project push notification association');
+        console.log('Cannot subscribe to push notifications because: No localStorage.');
         return;
     }
     try {
-        let fbm = await messaging();
-        await fbm.requestPermission();
-        const token = await fbm.getToken();
-        if (token) {
-            fetch(`/api/push/register?project=${project}`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token }),
-            });
+        let fbm = firebaseMessaging();
+        let permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            let token = await fbm.getToken();
+            if (token) {
+                fetch(`/api/push/register?project=${project}`, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token }),
+                });
+            }
+            subscribed = true;
+            localStorage.setItem(project, 'subscribed');
         }
-        subscribed = true;
-        localStorage.setItem(project, 'subscribed');
     } catch (e) {
         console.log('Error subscribing push notifications:', e);
     }
 }
 
 async function unsubscribe() {
+    if (!project) {
+        console.log('Cannot unsubscribe from push notifications because: No project.');
+        return;
+    }
     try {
-        let fbm = await messaging();
-        const token = await fbm.getToken();
+        let fbm = firebaseMessaging();
+        let token = await fbm.getToken();
         if (token) {
             fetch(`/api/push/unregister?project=${project}`, {
                 method: 'POST',
@@ -86,7 +90,9 @@ async function unsubscribe() {
             });
         }
         subscribed = false;
-        localStorage.setItem(project, '');
+        if (localStorageActive) {
+            localStorage.setItem(project, '');
+        }
     }
     catch (e) {
         console.log('Erorr unsubscribing push notifications:', e);
@@ -105,6 +111,7 @@ function clickHandler() {
     button {
         font-size: 1.2rem;
         display: flex;
+        align-items: center;
         background: transparent;
         border: none;
         cursor: pointer;
@@ -113,19 +120,44 @@ function clickHandler() {
         color: var(--app-dark-text-color);
     }
     button:hover {
-        font-weight: bold;
+        color: #284;
+        fill: #284;
+    }
+    button[data-subscribed="true"]:hover {
+        color: #824;
+        fill: #824;
     }
 </style>
 
 {#if twoButtonMode === true}
-    <button on:click={subscribe} disabled={disabled}>{notifyText}</button>
-    <button on:click={unsubscribe} disabled={disabled}>{stopNotifyText}</button>
+    <button on:click={subscribe} disabled={disabled}>
+        <svg height="24" viewBox="0 0 24 24" width="24">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+        Notify me of new releases!
+    </button>
+    <button on:click={unsubscribe} disabled={disabled}>
+        <svg height="24" viewBox="0 0 24 24" width="24">
+            <path d="M0 0h24v24H0z" fill="none"/>
+            <path d="M7 11v2h10v-2H7zm5-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+        Stop notifying me
+    </button>
 {:else}
-    <button on:click={clickHandler} disabled={disabled}>
+    <button on:click={clickHandler} disabled={disabled} data-subscribed={subscribed}>
         {#if subscribed}
-            {@html minusIcon}{stopNotifyText}
+            <svg height="24" viewBox="0 0 24 24" width="24">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M7 11v2h10v-2H7zm5-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            </svg>
+            Stop notifying me
         {:else}
-            {@html plusIcon}{notifyText}
+            <svg height="24" viewBox="0 0 24 24" width="24">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            </svg>
+            Notify me of new releases!
         {/if}
     </button>
 {/if}

@@ -1,0 +1,37 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getRole() {
+      // Read from the "roles" map in the resource (rsc).
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isOneOfRoles(array) {
+      // Determine if the user is one of an array of roles
+      return isSignedIn() && (getRole() in array);
+    }
+
+    match /projects/{project} {
+      allow get, list: if true;
+      allow write: if isOneOfRoles(['owner', 'admin']);
+      
+      match /releases/{release} {
+      	allow get, list: if true;
+        allow write: if isOneOfRoles(['owner', 'admin']);
+      }
+    }
+    match /emails/{email} {
+    	allow get: if true;
+      allow list: if isOneOfRoles(['owner', 'admin']);
+      allow write: if false;
+    }
+    match /users/{user} {
+    	allow get: if true;
+    	allow list: if isOneOfRoles(['owner', 'admin']);
+      allow write: if false;
+    }
+  }
+}

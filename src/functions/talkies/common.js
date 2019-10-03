@@ -1,8 +1,9 @@
-import {firestore} from '../firebase';
-
-const projRef = firestore.collection('projects');
-
 const versionForProject = async (requestedProject, version) => {
+  const {firebaseFirestore} = await import('../../firebase');
+  const firestore = firebaseFirestore();
+
+  const projRef = firestore.collection('projects');
+  
   version = version.trim();
 
   const noReleases = {

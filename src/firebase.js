@@ -1,39 +1,43 @@
-// import firebase from "firebase/app";
-// import "firebase/firestore";
-// import "firebase/messaging";
-
-import {firebaseConfig} from './firebase-config';
-
-// const firestore = firebase.firestore();
-// let messaging;
-// if (process.browser === true) {
-//     messaging = firebase.messaging();
-// }
-
-// export { firebase, firestore, messaging };
-export async function firestore() {
+export function firebase() {
     if (process.browser) {
-        return window.db
-    } else {
-        const firebase = await import('firebase')
-        if (firebase.apps.length == 0) {
-            let app = firebase.initializeApp(firebaseConfig)
-            return app.firestore()
-        } else {
-            return firebase.apps[0].firestore()
+        return window.firebase
+    }
+    else {
+        const admin = require('firebase-admin')
+        if (admin.apps.length == 0) {
+            admin.initializeApp()
+            return admin
+        }
+        else {
+            return admin.apps[0]
         }
     }
 }
-export async function messaging() {
+
+export function firebaseFirestore() {
+    if (process.browser) {
+        return window.db
+    }
+    else {
+        const admin = firebase()
+        return admin.firestore()
+    }
+}
+export function firebaseMessaging() {
     if (process.browser) {
         return window.messaging
-    } else {
-        const firebase = await import('firebase')
-        if (firebase.apps.length == 0) {
-            let app = firebase.initializeApp(firebaseConfig)
-            return app.messaging()
-        } else {
-            return firebase.apps[0].messaging()
-        }
+    }
+    else {
+        const admin = firebase()
+        return admin.messaging()
+    }
+}
+export function firebaseAuth() {
+    if (process.browser) {
+        return window.auth
+    }
+    else {
+        const admin = firebase()
+        return admin.auth()
     }
 }
