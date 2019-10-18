@@ -17,7 +17,7 @@
 import * as functions from 'firebase-functions';
 
 export const SpfHandler = async (request, response) => {
-  const uuid = await import('uuid/v4');
+  const uuid = await import('uuid');
   
   const {abortEmail, rejectEmail, authorizeEmail} = await import('./responders');
   
@@ -28,7 +28,7 @@ export const SpfHandler = async (request, response) => {
   const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
   
 
-  const transactionId = uuid();
+  const transactionId = uuid.v4();
 
   const fields = request.body;
 

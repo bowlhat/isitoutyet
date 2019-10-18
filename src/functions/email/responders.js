@@ -43,13 +43,15 @@ const extractFields = (fields) => {
 };
 
 const abortEmail = (transactionId, response) => {
-  const message = ((err instanceof Error) ? err.message : err) || 'Unknown Error';
-  log('error')(withId(transactionId)(message));
-  response
-    .status(500)
-    .send(
-      `Error processing your email. If you need support, quote transaction ID '${transactionId}' when contacting us.`,
-    );
+  return (err) => { 
+    const message = ((err instanceof Error) ? err.message : err) || 'Unknown Error';
+    log('error')(withId(transactionId)(message));
+    response
+      .status(500)
+      .send(
+        `Error processing your email. If you need support, quote transaction ID '${transactionId}' when contacting us.`,
+      );
+  };
 };
 
 const rejectEmail = (transactionId, response, fields) => {
