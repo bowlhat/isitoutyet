@@ -62,53 +62,56 @@ export const ReceiveHandler = async (request, response) => {
     if (!'headers' in fields) {
       throw noHeaders;
     }
-    projects.where('toaddress', '==', fields.headers.To)
-    .onSnapshot(async snapshot => {
-      const emailUUID = uuid.v4();
-      const releaseUUID = uuid.v4();
+    const snapshot = await projects.where('toaddress', '==', fields.headers.To).get()
 
-      const email = emails.doc(emailUUID)
-      let promises = [
-        email.set({
-          sentto: fields.headers.To || '',
-          sentfrom: fields.headers.From || '',
-          received: new Date(),
-          subject: fields.headers.Subject || '',
-          body: fields.plain || '',
-        })
-      ]
+    const emailUUID = uuid.v4();
+    const releaseUUID = uuid.v4();
 
-      for (const doc of snapshot.docs) {
-        const project = doc.data();
-        const releases = doc.ref.collection('releases');
+    const email = emails.doc(emailUUID)
+    let promises = [
+      email.set({
+        sentto: fields.headers.To || '',
+        sentfrom: fields.headers.From || '',
+        received: new Date(),
+        subject: fields.headers.Subject || '',
+        body: fields.plain || '',
+      })
+    ]
 
-        const re = XRegExp.default(project['regex'], 'i');
-        if (fields.headers.Subject && re.test(fields.headers.Subject)) {
-          const matches = XRegExp.exec(fields.headers.Subject, re);
-  
-          const version = matches['version'] || '';
-          const tmpcode = matches['codename2'] || '';
-          const codename = matches['codename'] || tmpcode;
-          const islts = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
-          const beta = matches['betatext'] || '';
-          const rc = matches['rctext'] || '';
-          const preRelInfo =  `${beta} ${rc}`.trim();
+    if (snapshot.empty) {
+      return acceptEmail(transactionId, response, fields)()
+    }
 
-          const release = releases.doc(releaseUUID)
-          promises.push(
-            release.set({
-              date,
-              version,
-              islts,
-              codename,
-              beta: preRelInfo,
-              email: email,
-            }))
-        }
+    snapshot.forEach(doc => {
+      const project = doc.data();
+      const releases = doc.ref.collection('releases');
+
+      const re = XRegExp.default(project['regex'], 'i');
+      if (fields.headers.Subject && re.test(fields.headers.Subject)) {
+        const matches = XRegExp.exec(fields.headers.Subject, re);
+
+        const version = matches['version'] || '';
+        const tmpcode = matches['codename2'] || '';
+        const codename = matches['codename'] || tmpcode;
+        const islts = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
+        const beta = matches['betatext'] || '';
+        const rc = matches['rctext'] || '';
+        const preRelInfo =  `${beta} ${rc}`.trim();
+
+        const release = releases.doc(releaseUUID)
+        promises.push(
+          release.set({
+            date,
+            version,
+            islts,
+            codename,
+            beta: preRelInfo,
+            email: email,
+          }))
       }
+    })
 
-      await Promise.all(promises)
-    });
+    await Promise.all(promises)
 
     return acceptEmail(transactionId, response, fields)()
   } catch(e) {
