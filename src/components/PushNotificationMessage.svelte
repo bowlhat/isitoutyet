@@ -4,7 +4,7 @@
 
     let message = '';
 	let showMessage = false;
-	let timer;
+	let timer, fcm;
 	const onMessage = payload => {
 		console.log('[firebase-messaging] received foreground message:', payload);
 		if ('notification' in payload) {

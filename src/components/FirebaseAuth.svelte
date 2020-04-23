@@ -5,7 +5,7 @@
     import {UserInfo} from '../stores.js';
 
     const dev = process.env.NODE_ENV === 'development';
-	let fcm, auth, ui;
+	let auth, ui;
 	let uiConfig;
 
     let showLogin = false;
