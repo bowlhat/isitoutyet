@@ -17,7 +17,10 @@ const versionForProject = async (requestedProject, version) => {
   try {
     const proj    = requestedProject.trim().toLowerCase(),
           relRef  = projRef.doc(proj).collection('releases'),
-          project = await projRef.doc(proj).get().then(snapshot => snapshot.data());
+          project = await projRef.doc(proj).get().then(snapshot => ({
+            ...snapshot.data(),
+            id: snapshot.id,
+          }));
     
     if (project) {
       const image = project['logo'].startsWith('https://') ?
@@ -27,7 +30,10 @@ const versionForProject = async (requestedProject, version) => {
         ...await relRef.where('version', '==', version).get().then(snapshot => snapshot.docs),
         ...await relRef.where('codename', '==', version).get().then(snapshot => snapshot.docs),
       ]
-      .map(i => i.data())
+      .map(i => ({
+        ...i.data(),
+        id: i.id,
+      }))
       .sort((a, b) => {
         const aDate = a.date.toDate(),
               bDate = b.date.toDate();
