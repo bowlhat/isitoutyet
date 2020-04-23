@@ -19,7 +19,7 @@ export const ReceiveHandler = async (request, response) => {
   const XRegExp = await import('xregexp');
   const uuid = await import('uuid');
   const {abortEmail, acceptEmail} = await import('./responders');
-  
+
   const {firebaseFirestore} = await import('../../firebase');
   const firestore = firebaseFirestore();
 
@@ -37,25 +37,25 @@ export const ReceiveHandler = async (request, response) => {
     'Nov',
     'Dec',
   ];
-  
+
   const noHeaders = 'No eMail Headers present message';
-  
+
   let EMAIL_BASIC_AUTH = '';
   if (functions.config().emailhandler) {
     EMAIL_BASIC_AUTH = functions.config().emailhandler.basicauth || '';
   }
   const CREDENTIALS_REGEXP = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
-  
+
   const projects = firestore.collection('projects');
   const emails = firestore.collection('emails');
-  
+
   const transactionId = uuid.v4();
 
   const match = CREDENTIALS_REGEXP.exec(request.headers.authorization || '');
   if (EMAIL_BASIC_AUTH && (!match || match[1] !== EMAIL_BASIC_AUTH)) {
     return abortEmail(transactionId, response)('Incorrect credentials');
   }
-  
+
   const fields = request.body;
 
   try {
@@ -101,7 +101,7 @@ export const ReceiveHandler = async (request, response) => {
         const release = releases.doc(releaseUUID)
         promises.push(
           release.set({
-            date,
+            date: fields.headers.Date || new Date(),
             version,
             islts,
             codename,
