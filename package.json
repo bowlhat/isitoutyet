@@ -23,9 +23,9 @@
     "dialogflow": "^1.2.0",
     "dialogflow-fulfillment": "^0.6.1",
     "express": "^4.17.1",
-    "firebase": "^7.9.1",
-    "firebase-admin": "^8.9.2",
-    "firebase-functions": "^3.3.0",
+    "firebase": "^7.14.1",
+    "firebase-admin": "^8.11.0",
+    "firebase-functions": "^3.6.0",
     "sirv": "^0.4.2",
     "uuid": "^3.4.0",
     "xregexp": "^4.3.0"
