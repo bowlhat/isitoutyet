@@ -1,53 +1,61 @@
 import * as functions from 'firebase-functions';
 
-export const RegisterForPush = functions.https.onRequest(async (req, res) => {
-    const {firebase} = await import('../../firebase');
-    const admin = firebase();
+export const RegisterForPush = functions
+    .runWith({timeoutSeconds: 5, memory: '128MB'})
+    .https
+    .onRequest(async (req, res) => {
+        const {firebase} = await import('../../firebase');
+        const admin = firebase();
 
-    const project = req.query.project;
-    if (!project) {
-        return res.sendStatus(401);
-    }
+        const project = req.query.project;
+        if (!project) {
+            return res.sendStatus(401);
+        }
 
-    const {token} = req.body;
-    if (!token) {
-        return res.sendStatus(403);
-    }
+        const {token} = req.body;
+        if (!token) {
+            return res.sendStatus(403);
+        }
 
-    try {
-        const response = await admin.messaging().subscribeToTopic(token, project);
-        return res.sendStatus(200);
-    } catch(e) {
-        console.log(e);
-        return res.sendStatus(500);
-    }
-});
+        try {
+            const response = await admin.messaging().subscribeToTopic(token, project);
+            return res.sendStatus(200);
+        } catch(e) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+    });
 
-export const UnregisterFromPush = functions.https.onRequest(async (req, res) => {
-    const {firebase} = await import('../../firebase');
-    const admin = firebase();
+export const UnregisterFromPush = functions
+    .runWith({timeoutSeconds: 5, memory: '128MB'})
+    .https
+    .onRequest(async (req, res) => {
+        const {firebase} = await import('../../firebase');
+        const admin = firebase();
 
-    const project = req.query.project;
-    if (!project) {
-        return res.sendStatus(401);
-    }
+        const project = req.query.project;
+        if (!project) {
+            return res.sendStatus(401);
+        }
 
-    const {token} = req.body;
-    if (!token) {
-        return res.sendStatus(403);
-    }
+        const {token} = req.body;
+        if (!token) {
+            return res.sendStatus(403);
+        }
 
-    try {
-        const response = await admin.messaging().unsubscribeFromTopic(token, project);
-        return res.sendStatus(200);
-    } catch(e) {
-        console.log(e);
-        console.log(token);
-        return res.sendStatus(500);
-    }
-});
+        try {
+            const response = await admin.messaging().unsubscribeFromTopic(token, project);
+            return res.sendStatus(200);
+        } catch(e) {
+            console.log(e);
+            console.log(token);
+            return res.sendStatus(500);
+        }
+    });
 
-export const SendReleaseMessage = functions.firestore
+export const SendReleaseMessage = functions
+    .runWith({timeoutSeconds: 10, memory: '128MB'})
+    .firestore
     .document('projects/{project}/releases/{releaseId}')
     .onCreate(async snapshot => {
         const {firebase} = await import('../../firebase');
