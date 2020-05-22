@@ -11,6 +11,10 @@
             .orderBy('date', 'desc')
             .get();
 
+        if (!project.exists) {
+            return this.error(404, 'Not Found')
+        }
+
         return {
             project: {
                 ...project.data(),
