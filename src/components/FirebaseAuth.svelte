@@ -151,17 +151,17 @@
 
 <div class="praetorians">
     {#if showLogin}
-        <a class="cancel-login" href="javascript:"
-            on:click={() => showLogin = false}>Cancel login</a>
+        <a class="cancel-login" href="/"
+            on:click|preventDefault={() => showLogin = false}>Cancel login</a>
     {/if}
 
     {#if $UserInfo.isLoggedIn}
         <div class="logout">
-            <a on:click={signOut} href='javascript:'>Logout</a>
+            <a on:click|preventDefault={signOut} href='/signout'>Logout</a>
         </div>
     {:else}
         <div class="login">
-            <a on:click={startSigninFlow} href='javascript:'>Login</a>
+            <a on:click|preventDefault={startSigninFlow} href='/signin'>Login</a>
         </div>
     {/if}
 </div>

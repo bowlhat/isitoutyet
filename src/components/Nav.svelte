@@ -60,6 +60,6 @@
 	</ul>
 	{#if $UserInfo.isLoggedIn}
 		<span>{$UserInfo.displayName}</span>
-		<a href="javascript:" on:click={signOut}>Logout</a>
+		<a href="/signout" on:click|preventDefault={signOut}>Logout</a>
 	{/if}
 </nav>
