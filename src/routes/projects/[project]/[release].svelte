@@ -28,7 +28,7 @@
 
         let dateField = release.data().date
         let date
-        if (typeof dateField.toDate === 'function') {
+        if (dateField.toDate) {
             date = dateField.toDate()
         } else if (typeof dateField === 'string') {
             date = new Date(dateField)
@@ -39,7 +39,7 @@
         let receivedField = email.received
         let received
         if (receivedField) {
-            if (typeof receivedField.toDate === 'function') {
+            if (receivedField.toDate) {
                 received = receivedField.toDate()
             } else if (typeof receivedField === 'string') {
                 received = new Date(receivedField)
@@ -74,12 +74,12 @@
     $: email = release.email;
 
     let reldate
-    $: reldate = release.date ? new Date(release.date) : epoch;
+    $: reldate = release.date || epoch;
     $: releaseDate = reldate.toLocaleDateString()
     $: releaseTime = reldate.toLocaleTimeString()
 
     let recdate
-    $: recdate = email.received ? new Date(email.received) : epoch;
+    $: recdate = email.received || epoch;
 </script>
 
 <style>
