@@ -22,21 +22,21 @@
         }
 
         let dateField = release.data().date
-        let date = new Date(0)
-        if (dateField.toDate) {
+        let date
+        if (typeof dateField.toDate === 'function') {
             date = dateField.toDate()
-        }
-        else if (typeof dateField === 'string') {
+        } else if (typeof dateField === 'string') {
             date = new Date(dateField)
+        } else {
+            date = new Date(0)
         }
 
         let receivedField = email.received
         let received
         if (receivedField) {
-            if (receivedField.toDate) {
+            if (typeof receivedField.toDate === 'function') {
                 received = receivedField.toDate()
-            }
-            else if (typeof receivedField === 'string') {
+            } else if (typeof receivedField === 'string') {
                 received = new Date(receivedField)
             }
         } else {
@@ -67,24 +67,24 @@
     const epochDate = epoch.toDateString();
     const epochTime = epoch.toTimeString();
     
-    let releaseDate = epochDate;
-    let releaseTime = epochTime;
+    let releaseDate;
+    let releaseTime;
 
-    let emailDate = epochDate;
-    let emailTime = epochTime;
+    let emailDate;
+    let emailTime;
     
     let email = {};
 
     let reldate = epoch
     $: {
-        reldate = new Date(release.date) || epoch;
+        reldate = new Date(release.date || epoch);
         releaseDate = reldate.toDateString();
         releaseTime = reldate.toTimeString();
     }
     let recdate = epoch
     $: {
         email = release.email;
-        recdate = new Date(email.received) || epoch;
+        recdate = new Date(email.received || epoch);
         emailDate = recdate.toDateString();
         emailTime = recdate.toTimeString();
     }
