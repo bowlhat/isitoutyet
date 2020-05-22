@@ -22,7 +22,7 @@
         }
 
         let dateField = release.data().date
-        let date
+        let date = new Date(0)
         if (dateField.toDate) {
             date = dateField.toDate()
         }
