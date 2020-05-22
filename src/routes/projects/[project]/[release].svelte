@@ -12,7 +12,12 @@
             .doc(params.release)
             .get();
 
-        let emailField = release.data().email
+        if (!project.exists || !release.exists) {
+            return this.error(404, 'Not Found')
+        }
+
+        let relData = release.data()
+        let emailField = relData.email
         let email
         if (emailField.get) {
             email = (await emailField.get()).data();
@@ -49,7 +54,7 @@
                 slug: project.id,
             },
             release: {
-                ...release.data(),
+                ...relData,
                 date,
                 email: {
                     ...email,
@@ -64,30 +69,17 @@
     export let project;
     export let release;
     const epoch = new Date(0);
-    const epochDate = epoch.toDateString();
-    const epochTime = epoch.toTimeString();
-    
-    let releaseDate;
-    let releaseTime;
-
-    let emailDate;
-    let emailTime;
     
     let email = {};
+    $: email = release.email;
 
-    let reldate = epoch
-    $: {
-        reldate = new Date(release.date || epoch);
-        releaseDate = reldate.toDateString();
-        releaseTime = reldate.toTimeString();
-    }
-    let recdate = epoch
-    $: {
-        email = release.email;
-        recdate = new Date(email.received || epoch);
-        emailDate = recdate.toDateString();
-        emailTime = recdate.toTimeString();
-    }
+    let reldate
+    $: reldate = release.date ? new Date(release.date) : epoch;
+    $: releaseDate = reldate.toLocaleDateString()
+    $: releaseTime = reldate.toLocaleTimeString()
+
+    let recdate
+    $: recdate = email.received ? new Date(email.received) : epoch;
 </script>
 
 <style>
@@ -160,7 +152,7 @@
             to continued maintenance of this project.
         </p>
         <code>
-            {#if (email && email.body)}
+            {#if email && email.body}
                 {#each email.body.split(/\r\n\r\n|\n\n|\r\r/) as paragraph}
                     <p>
                         {#if paragraph.trim().match(/^([^\n\r]+(\r\n|\n|\r)\s*[-]+\s*)|(\s*[-]+\s*(\r\n|\n|\r).*)$/)}
