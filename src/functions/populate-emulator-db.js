@@ -12,7 +12,13 @@ function getDocs(dir, parentCollection) {
         if (docFileName.endsWith('.json') && stat.isFile()) {
             let docName = path.basename(docFileName, '.json')
             let doc = parentCollection.doc(docName)
-            doc.set(JSON.parse(fs.readFileSync(docFilePath)))
+            let jsonDoc = JSON.parse(fs.readFileSync(docFilePath))
+            for (let key in jsonDoc) {
+                if (typeof jsonDoc[key] === 'object' && jsonDoc[key].__type__ === 'timestamp') {
+                    jsonDoc[key] = new Date(jsonDoc[key].value);
+                }
+            }
+            doc.set(jsonDoc)
             console.log('created firestore document: ' + docName)
         } else if (
             stat.isDirectory() &&

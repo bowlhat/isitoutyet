@@ -1,6 +1,9 @@
 {
     "body": "Test email body",
-    "received": "0001-01-01T00:00:00Z",
+    "received": {
+        "__type__": "timestamp",
+        "value": "0001-01-01T00:00:00Z"
+    },
     "sentfrom": "test@example.com",
     "sentto": "ubuntu-announce@lists.ubuntu.com",
     "subject": "Test email subject"

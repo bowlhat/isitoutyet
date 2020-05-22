@@ -1,7 +1,10 @@
 {
     "beta": "",
     "codename": "",
-    "date": "0001-01-01T00:00:00Z",
+    "date": {
+        "__type__": "timestamp",
+        "value": "0001-01-01T00:00:00Z"
+    },
     "email": "/emails/000001",
     "islts": true,
     "version": "18.04"
