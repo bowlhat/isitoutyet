@@ -111,7 +111,7 @@
         <h3>Known releases</h3>
         <ul class="list">
             {#each releases as release (release.id)}
-                {#if (counter++ === 5 || counter % 35 === 0)}
+                {#if counter++ === 5 || counter % 35 === 0}
                     <li class="donate">Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking {project.name}'s releases</li>
                 {/if}
                 <li>
@@ -121,7 +121,7 @@
                     </a>
                 </li>
             {/each}
-            {#if (counter < 5 || counter % 35 > 12)}
+            {#if counter < 5 || counter % 35 > 12}
                 <li class="donate">Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking {project.name}'s releases</li>
             {/if}
         </ul>
