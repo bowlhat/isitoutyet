@@ -3,14 +3,15 @@
   "description": "TODO",
   "version": "0.0.1",
   "engines": {
-    "node": "10"
+    "node": "12"
   },
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy",
     "export": "sapper export --legacy",
     "start": "node __sapper__/build",
-    "firebase:dev": "yarn dev & env IIOY_DEV=true yarn firebase emulators:start",
+    "firebase:dev": "run-p dev firebase:emulators",
+    "firebase:emulators": "env IIOY_DEV=true yarn firebase emulators:start",
     "deploy": "yarn firebase deploy",
     "cy:run": "cypress run",
     "cy:open": "cypress open",

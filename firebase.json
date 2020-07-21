@@ -12,11 +12,10 @@
       "npm run build",
       "npm prune --production"
     ],
-    "source": ".",
+    "source": "__sapper__/build",
     "ignore": [
-      ".git/**",
-      "cypress",
-      "src/**"
+      ".package*.json",
+      ".runtimeconfig.json"
     ]
   },
   "hosting": {
