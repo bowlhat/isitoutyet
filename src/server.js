@@ -24,8 +24,8 @@ else {
 	server = functions.runWith({
 		timeoutSeconds: 5,
 		memory: '128MB',
-	}).https.onRequest((req, res) => {
-		const sapper = require('@sapper/server');
+	}).https.onRequest(async (req, res) => {
+		const sapper = await import('@sapper/server');
 		req.baseUrl = '';
 		return sapper.middleware()(req, res);
 	});

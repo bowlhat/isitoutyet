@@ -75,6 +75,14 @@ export default {
 				'process.browser': false,
 				'process.env.NODE_ENV': JSON.stringify(mode),
 			}),
+			replace({
+				'"__sapper__/build"': 'process.cwd()',
+				'delimiters': ['',''],
+			}),
+			!dev && replace({
+				'!emitted_basepath && process.send': 'false',
+				'delimiters': ['',''],
+			}),
 			svelte({
 				generate: 'ssr',
 				dev,
