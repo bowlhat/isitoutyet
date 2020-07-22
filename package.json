@@ -7,7 +7,11 @@
   },
   "scripts": {
     "dev": "sapper dev",
-    "build": "sapper build --legacy",
+    "build": "run-s build:sapper build:exports build:packagejson build:npminstall",
+    "build:exports": "sed -i -E 's/(require.*)/module.exports = \\1/' __sapper__/build/index.js",
+    "build:sapper": "sapper build --legacy",
+    "build:packagejson": "cp package*.json __sapper__/build/",
+    "build:npminstall": "npm install --production --prefix __sapper__/build",
     "export": "sapper export --legacy",
     "start": "node __sapper__/build",
     "firebase:dev": "run-p dev firebase:emulators",

@@ -77,7 +77,7 @@ export default {
 			}),
 			svelte({
 				generate: 'ssr',
-				dev
+				dev,
 			}),
 			resolve({
 				dedupe,
