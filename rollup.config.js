@@ -15,7 +15,6 @@ const onwarn = (warning, onwarn) =>
 	(warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
 	(warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) ||
 	onwarn(warning);
-const dedupe = importee => importee === 'svelte' || importee.startsWith('svelte/');
 
 export default {
 	client: {
@@ -33,7 +32,7 @@ export default {
 			}),
 			resolve({
 				browser: true,
-				dedupe,
+				dedupe: ['svelte'],
 			}),
 			commonjs({
 				namedExports: {
@@ -67,6 +66,7 @@ export default {
 			})
 		],
 
+		preserveEntrySignatures: false,
 		onwarn,
 	},
 
@@ -92,14 +92,13 @@ export default {
 				dev,
 			}),
 			resolve({
-				dedupe,
+				dedupe: ['svelte'],
 			}),
 			commonjs(),
 		],
-		external: Object.keys(pkg.dependencies).concat(
-			require('module').builtinModules || Object.keys(process.binding('natives'))
-		),
+		external: Object.keys(pkg.dependencies).concat(require('module').builtinModules),
 
+		preserveEntrySignatures: false,
 		onwarn,
 	},
 
@@ -116,6 +115,7 @@ export default {
 			!dev && terser()
 		],
 
+		preserveEntrySignatures: false,
 		onwarn,
 	},
 
