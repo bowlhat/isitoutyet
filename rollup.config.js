@@ -26,8 +26,10 @@ export default {
 				'process.env.NODE_ENV': JSON.stringify(mode),
 			}),
 			svelte({
-				dev,
-				hydratable: true,
+				compilerOptions: {
+					dev,
+					hydratable: true,
+				},
 				emitCss: true
 			}),
 			resolve({
@@ -87,9 +89,11 @@ export default {
 				'delimiters': ['',''],
 			}),
 			svelte({
-				generate: 'ssr',
-				hydratable: true,
-				dev,
+				compilerOptions: {
+					dev,
+					generate: 'ssr',
+					hydratable: true,
+				},
 			}),
 			resolve({
 				dedupe: ['svelte'],
