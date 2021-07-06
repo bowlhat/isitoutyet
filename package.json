@@ -1,9 +1,9 @@
 {
-  "name": "TODO",
+  "name": "isitoutyet",
   "description": "TODO",
   "version": "0.0.1",
   "engines": {
-    "node": "12"
+    "node": "14"
   },
   "scripts": {
     "dev": "sapper dev",
@@ -22,36 +22,33 @@
     "test": "run-p --race dev cy:run"
   },
   "dependencies": {
-    "actions-on-google": "^2.13.0",
     "alexa-app": "^4.2.3",
-    "dialogflow": "^4.0.3",
-    "dialogflow-fulfillment": "^0.6.1",
-    "firebase": "^8.2.7",
-    "firebase-admin": "^9.5.0",
-    "firebase-functions": "^3.13.1",
-    "uuid": "^3.4.0",
-    "xregexp": "^4.4.1"
+    "firebase": "^8.7.0",
+    "firebase-admin": "^9.10.0",
+    "firebase-functions": "^3.14.1",
+    "uuid": "^8.3.2",
+    "xregexp": "^5.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
+    "@babel/core": "^7.14.6",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.12.15",
-    "@babel/preset-env": "^7.12.16",
-    "@babel/runtime": "^7.12.13",
+    "@babel/plugin-transform-runtime": "^7.14.5",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/runtime": "^7.14.6",
     "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.0",
-    "@rollup/plugin-replace": "^2.3.4",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-replace": "^2.4.2",
     "compression": "^1.7.4",
     "express": "^4.17.1",
-    "firebase-tools": "^9.4.0",
+    "firebase-tools": "^9.14.0",
     "npm-run-all": "^4.1.5",
-    "rollup": "^2.39.0",
+    "rollup": "^2.52.7",
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-terser": "^7.0.2",
     "sapper": "^0.29.1",
-    "sirv": "^0.4.6",
-    "svelte": "^3.32.3"
+    "sirv": "^1.0.12",
+    "svelte": "^3.38.3"
   }
 }

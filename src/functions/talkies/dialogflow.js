@@ -30,36 +30,37 @@ export const DialogFlow = async (request, response) => {
     agent.add(`I'm sorry, can you try again?`);
   }
 
-  function releaseInfo(agent) {
+  async function releaseInfo(agent) {
     let requestedProject = agent.parameters.Project || '';
     let version = agent.parameters.Version || '';
     
     requestedProject = requestedProject.trim();
     version = version.trim();
 
-    return versionForProject(requestedProject, version)
-      .then(utterance => {
-        const text = new Text(utterance.text);
-        if (utterance.ssml) {
-          text.setSsml(`<speak>${utterance.ssml}</speak>`);
-        };
-        agent.add(text);
+    try {
+      const utterance = await versionForProject(requestedProject, version);
+      const text = new Text(utterance.text);
+      if (utterance.ssml) {
+        text.setSsml(`<speak>${utterance.ssml}</speak>`);
+      };
+      agent.add(text);
 
-        for (const platform of ['FACEBOOK','SLACK','TELEGRAM','KIK','SKYPE','LINE','VIBER','ACTIONS_ON_GOOGLE']) {
-          const card = new Card(utterance.cardTitle);
-          card.setImage(utterance.image);
-          card.setText(utterance.text);
-          card.setPlatform(platform);
-          if (utterance.url) {
-            card.setButton({
-              text: `Open the release notes...`,
-              url: utterance.url,
-            });
-          }
-          agent.add(card);
+      for (const platform of ['FACEBOOK', 'SLACK', 'TELEGRAM', 'KIK', 'SKYPE', 'LINE', 'VIBER', 'ACTIONS_ON_GOOGLE']) {
+        const card = new Card(utterance.cardTitle);
+        card.setImage(utterance.image);
+        card.setText(utterance.text);
+        card.setPlatform(platform);
+        if (utterance.url) {
+          card.setButton({
+            text: `Open the release notes...`,
+            url: utterance.url,
+          });
         }
-      })
-      .catch(() => { agent.add(`I can't answer that right now because something is broken. Please try later.`) });
+        agent.add(card);
+      }
+    } catch (e) {
+      agent.add(`I can't answer that right now because something is broken. Please try later.`);
+    }
   }
 
   let intentMap = new Map();
