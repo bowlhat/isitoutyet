@@ -112,12 +112,14 @@ function clickHandler() {
         font-size: 1.2rem;
         display: flex;
         align-items: center;
-        background: transparent;
+        background: var(--app-header-background-color);
         border: none;
+        border-radius: 1rem;
         cursor: pointer;
         padding: 1em 2em;
         margin: 0 auto;
         color: var(--app-dark-text-color);
+        fill: var(--app-dark-text-color);
     }
     button:hover {
         color: #284;

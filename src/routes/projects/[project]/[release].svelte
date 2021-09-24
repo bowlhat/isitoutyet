@@ -145,7 +145,7 @@
         <p>Subject: {email && email.subject ? email.subject : ''}</p>
         <p class="donate">
             Your donations keep us afloat. Please
-            <a href="https://liberapay.com/diddledan/donate">
+            <a href="https://liberapay.com/diddledani/donate">
                 <img alt="Donate using Liberapay"
                     src="https://liberapay.com/assets/widgets/donate.svg">
             </a>

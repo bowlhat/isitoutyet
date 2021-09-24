@@ -22,8 +22,8 @@
 	}
 
     footer {
-      padding: 1.5rem;
-      text-align: center;
+		padding: 1.5rem;
+		text-align: center;
     }
 
     footer a,
@@ -31,7 +31,7 @@
     footer a:hover,
     footer a:focus,
     footer a:focus-within {
-      color: var(--app-dark-text-color);
+		color: var(--app-dark-text-color);
     }
 
 	.copyright-logo {
@@ -67,7 +67,7 @@
 				<span>|</span>
 				<a href="/terms">Terms</a>
 				<span>|</span>
-				<span>© Daniel Llewellyn T/A Bowl Hat</span>
+				<span>© Dani Llewellyn T/A Bowl Hat</span>
 			</p>
 			<p class="copyright-logo">Bowl Hat</p>
 		</div>

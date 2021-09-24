@@ -56,6 +56,7 @@
     }
     .logo {
         text-align: center;
+        margin-top: 2rem;
     }
     .donate {
 		line-height: 1.8em;
@@ -112,7 +113,7 @@
         <ul class="list">
             {#each releases as release (release.id)}
                 {#if counter++ === 5 || counter % 35 === 0}
-                    <li class="donate">Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking {project.name}'s releases</li>
+                    <li class="donate">Please <a href="https://liberapay.com/diddledani/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking {project.name}'s releases</li>
                 {/if}
                 <li>
                     <a href="/projects/{project.slug}/{release.id}">
@@ -122,7 +123,7 @@
                 </li>
             {/each}
             {#if counter < 5 || counter % 35 > 12}
-                <li class="donate">Please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking {project.name}'s releases</li>
+                <li class="donate">Please <a href="https://liberapay.com/diddledani/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a> so that we may continue tracking {project.name}'s releases</li>
             {/if}
         </ul>
     </article>

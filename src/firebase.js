@@ -5,8 +5,7 @@ export function firebase() {
     else {
         const admin = require('firebase-admin')
         if (admin.apps.length == 0) {
-            admin.initializeApp()
-            return admin
+            return admin.initializeApp()
         }
         else {
             return admin.apps[0]

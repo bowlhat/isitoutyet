@@ -37,6 +37,6 @@
 	</p>
 	<p class="donate">
 		Please consider donating to the project to ensure it remains available. If you
-		want to help, please <a href="https://liberapay.com/diddledan/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>.
+		want to help, please <a href="https://liberapay.com/diddledani/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>.
 	</p>
 </section>

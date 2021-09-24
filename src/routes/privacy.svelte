@@ -26,7 +26,7 @@
         <h2>Privacy information</h2>
     </header>
 </section>
-      
+
 <section>
     <h3>Effective Dates</h3>
     <p>
