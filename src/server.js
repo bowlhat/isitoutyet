@@ -22,8 +22,8 @@ if (dev && process.env.NODE_ENV === 'development') {
 }
 else {
 	server = functions.runWith({
-		timeoutSeconds: 10,
-		memory: '128MB',
+		timeoutSeconds: 5,
+		memory: '256MB',
 	}).https.onRequest(async (req, res) => {
 		const sapper = await import('@sapper/server');
 		req.baseUrl = '';
