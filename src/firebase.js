@@ -1,38 +1,25 @@
+import {firebaseConfig} from './firebase-config.js'
+
 export function firebase() {
     if (process.browser) {
-        return window.firebase
+        const admin = window.firebase
+        return admin.initializeApp(firebaseConfig)
     }
     else {
         const admin = require('firebase-admin')
-        admin.initializeApp()
-        return admin
+        return admin.initializeApp()
     }
 }
 
 export function firebaseFirestore() {
-    if (process.browser) {
-        return window.db
-    }
-    else {
-        const admin = firebase()
-        return admin.firestore()
-    }
+    const admin = firebase()
+    return admin.firestore()
 }
 export function firebaseMessaging() {
-    if (process.browser) {
-        return window.messaging
-    }
-    else {
-        const admin = firebase()
-        return admin.messaging()
-    }
+    const admin = firebase()
+    return admin.messaging()
 }
 export function firebaseAuth() {
-    if (process.browser) {
-        return window.auth
-    }
-    else {
-        const admin = firebase()
-        return admin.auth()
-    }
+    const admin = firebase()
+    return admin.auth()
 }
