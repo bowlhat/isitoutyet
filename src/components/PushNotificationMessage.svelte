@@ -1,10 +1,10 @@
 <script>
     import {onMount} from 'svelte';
-	import {firebase, firebaseMessaging, firebaseAuth} from '../firebase';
+	import {firebaseMessaging} from '../firebase';
 
     let message = '';
 	let showMessage = false;
-	let timer, fcm;
+	let timer, messaging;
 	const onMessage = payload => {
 		console.log('[firebase-messaging] received foreground message:', payload);
 		if ('notification' in payload) {
@@ -18,8 +18,8 @@
 	}
 
 	onMount(async () => {
-		fcm = firebaseMessaging();
-		fcm.onMessage(onMessage);
+		messaging = firebaseMessaging();
+		messaging.onMessage(onMessage);
 	});
 </script>
 

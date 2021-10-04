@@ -49,10 +49,10 @@ async function subscribe() {
         return;
     }
     try {
-        let fbm = firebaseMessaging();
+        let messaging = firebaseMessaging();
         let permission = await Notification.requestPermission();
         if (permission === 'granted') {
-            let token = await fbm.getToken();
+            let token = await messaging.getToken();
             if (token) {
                 fetch(`/api/push/register?project=${project}`, {
                     method: 'POST',
@@ -77,8 +77,8 @@ async function unsubscribe() {
         return;
     }
     try {
-        let fbm = firebaseMessaging();
-        let token = await fbm.getToken();
+        let messaging = firebaseMessaging();
+        let token = await messaging.getToken();
         if (token) {
             fetch(`/api/push/unregister?project=${project}`, {
                 method: 'POST',
