@@ -100,7 +100,7 @@ export const ReceiveHandler = async (request, response) => {
         const release = releases.doc(releaseUUID)
         promises.push(
           release.set({
-            date: new Date(fields.headers.Date || Date.now),
+            date: new Date(fields.headers.Date ?? Date.now),
             version,
             islts,
             codename,
