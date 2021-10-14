@@ -16,7 +16,6 @@
 import * as functions from 'firebase-functions';
 
 export const ReceiveHandler = async (request, response) => {
-  const XRegExp = await import('xregexp');
   const uuid = await import('uuid');
   const {abortEmail, acceptEmail} = await import('./responders');
 
@@ -86,16 +85,16 @@ export const ReceiveHandler = async (request, response) => {
       const project = doc.data();
       const releases = doc.ref.collection('releases');
 
-      const re = XRegExp.default(project['regex'], 'i');
+      const re = new RegExp(project['regex'], 'i');
       if (fields.headers.Subject && re.test(fields.headers.Subject)) {
-        const matches = XRegExp.exec(fields.headers.Subject, re);
+        const matches = re.exec(fields.headers.Subject, re);
 
-        const version = matches['version'] || '';
-        const tmpcode = matches['codename2'] || '';
-        const codename = matches['codename'] || tmpcode;
+        const version = matches['version'] ?? '';
+        const tmpcode = matches['codename2'] ?? '';
+        const codename = matches['codename'] ?? tmpcode;
         const islts = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
-        const beta = matches['betatext'] || '';
-        const rc = matches['rctext'] || '';
+        const beta = matches['betatext'] ?? '';
+        const rc = matches['rctext'] ?? '';
         const preRelInfo =  `${beta} ${rc}`.trim();
 
         const release = releases.doc(releaseUUID)
