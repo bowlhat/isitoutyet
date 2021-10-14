@@ -89,12 +89,12 @@ export const ReceiveHandler = async (request, response) => {
       if (fields.headers.Subject && re.test(fields.headers.Subject)) {
         const matches = re.exec(fields.headers.Subject, re);
 
-        const version = matches['version'] ?? '';
-        const tmpcode = matches['codename2'] ?? '';
-        const codename = matches['codename'] ?? tmpcode;
-        const islts = !!(matches['lts'] && matches['lts'].indexOf('LTS') > -1);
-        const beta = matches['betatext'] ?? '';
-        const rc = matches['rctext'] ?? '';
+        const version = matches.groups['version'] ?? '';
+        const tmpcode = matches.groups['codename2'] ?? '';
+        const codename = matches.groups['codename'] ?? tmpcode;
+        const islts = !!(matches.groups['lts'] && matches.groups['lts'].indexOf('LTS') > -1);
+        const beta = matches.groups['betatext'] ?? '';
+        const rc = matches.groups['rctext'] ?? '';
         const preRelInfo =  `${beta} ${rc}`.trim();
 
         const release = releases.doc(releaseUUID)
